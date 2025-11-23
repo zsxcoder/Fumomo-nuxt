@@ -58,16 +58,21 @@ onMounted(() => {
     }
   }
 
-  // 绑定滚轮事件（仅在非移动端）
-  if (!isMobile.value) {
+  // 绑定滚轮事件（仅在非移动端、客户端且配置启用时）
+  if (import.meta.client && !isMobile.value && siteConfig.theme.scrollNavigation) {
     document.addEventListener('wheel', handleWheel, { passive: false })
+    
+    // 清理函数
+    onUnmounted(() => {
+      document.removeEventListener('wheel', handleWheel)
+      window.removeEventListener('resize', checkMobile)
+    })
+  } else {
+    // 如果未启用滚动导航，只清理 resize 监听器
+    onUnmounted(() => {
+      window.removeEventListener('resize', checkMobile)
+    })
   }
-
-  // 清理函数
-  onUnmounted(() => {
-    document.removeEventListener('wheel', handleWheel)
-    window.removeEventListener('resize', checkMobile)
-  })
 })
 
 // 开始分散动画
@@ -142,7 +147,7 @@ const startScatterAnimation = () => {
 
       <!-- 滚动提示 -->
       <div 
-        v-if="!isScattering && !isMobile"
+        v-if="!isScattering && !isMobile && siteConfig.theme.scrollNavigation"
         class="fixed bottom-8 left-1/2 transform -translate-x-1/2 text-center opacity-70 hover:opacity-100 transition-opacity duration-300"
       >
         <div class="animate-bounce">

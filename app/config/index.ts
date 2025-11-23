@@ -171,7 +171,12 @@ export const siteConfig = {
         // 设置为 true 启用自定义鼠标样式（小圆点 + 跟随效果）
         // 设置为 false 使用系统默认鼠标样式
         // 注意：自定义鼠标样式仅在桌面端（非触摸设备）生效
-        customCursor: true,
+        customCursor: false,
+        
+        // 滚动导航开关
+        // 设置为 true 启用向下滚动到底部进入下一页的功能
+        // 设置为 false 禁用自动页面导航，用户需要手动点击导航
+        scrollNavigation: false,
     },
 
     // ========================================

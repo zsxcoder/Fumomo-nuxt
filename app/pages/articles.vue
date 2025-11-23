@@ -133,14 +133,22 @@ onMounted(() => {
   }
 
   // 绑定事件
-  document.addEventListener('wheel', handleWheel, { passive: false })
-  window.addEventListener('scroll', updateScrollProgress, { passive: true })
+  if (import.meta.client && !isMobile.value && siteConfig.theme.scrollNavigation) {
+    document.addEventListener('wheel', handleWheel, { passive: false })
+  }
+  if (import.meta.client) {
+    window.addEventListener('scroll', updateScrollProgress, { passive: true })
+  }
 
   // 清理函数
   onUnmounted(() => {
-    document.removeEventListener('wheel', handleWheel)
-    window.removeEventListener('scroll', updateScrollProgress)
-    window.removeEventListener('resize', handleResize)
+    if (import.meta.client && !isMobile.value && siteConfig.theme.scrollNavigation) {
+      document.removeEventListener('wheel', handleWheel)
+    }
+    if (import.meta.client) {
+      window.removeEventListener('scroll', updateScrollProgress)
+      window.removeEventListener('resize', handleResize)
+    }
   })
 })
 
@@ -352,7 +360,7 @@ watch(() => route.query.page, (newPage, oldPage) => {
 
       <!-- 滚动提示和进度指示器 -->
       <div 
-        v-if="!isScattering && !isLoading && !isMobile"
+        v-if="!isScattering && !isLoading && !isMobile && siteConfig.theme.scrollNavigation"
         class="fixed bottom-8 right-8 text-center opacity-70 hover:opacity-100 transition-opacity duration-300"
       >
         <div 

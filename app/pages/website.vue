@@ -72,8 +72,12 @@ onMounted(() => {
   }
   window.addEventListener('resize', handleResize)
   
-  window.addEventListener('scroll', handleScroll)
-  window.addEventListener('wheel', handleWheel, { passive: false })
+  if (import.meta.client) {
+    window.addEventListener('scroll', handleScroll)
+  }
+  if (import.meta.client && !isMobile.value && siteConfig.theme.scrollNavigation) {
+    window.addEventListener('wheel', handleWheel, { passive: false })
+  }
   
   // 检测所有网站状态（如果开启了状态检测）
   if (statusCheckConfig.enable) {
@@ -85,16 +89,24 @@ onMounted(() => {
     }, statusCheckConfig.autoRefreshInterval)
     
     onUnmounted(() => {
-      window.removeEventListener('scroll', handleScroll)
-      window.removeEventListener('wheel', handleWheel)
-      window.removeEventListener('resize', handleResize)
+      if (import.meta.client) {
+        window.removeEventListener('scroll', handleScroll)
+        window.removeEventListener('resize', handleResize)
+      }
+      if (import.meta.client && !isMobile.value && siteConfig.theme.scrollNavigation) {
+        window.removeEventListener('wheel', handleWheel)
+      }
       clearInterval(statusCheckInterval)
     })
   } else {
     onUnmounted(() => {
-      window.removeEventListener('scroll', handleScroll)
-      window.removeEventListener('wheel', handleWheel)
-      window.removeEventListener('resize', handleResize)
+      if (import.meta.client) {
+        window.removeEventListener('scroll', handleScroll)
+        window.removeEventListener('resize', handleResize)
+      }
+      if (import.meta.client && !isMobile.value && siteConfig.theme.scrollNavigation) {
+        window.removeEventListener('wheel', handleWheel)
+      }
     })
   }
 })
@@ -449,7 +461,7 @@ const formatResponseTime = (time?: number) => {
 
       <!-- 滚动提示和进度指示器 -->
       <div 
-        v-if="!showDisperse && !isMobile"
+        v-if="!showDisperse && !isMobile && siteConfig.theme.scrollNavigation"
         class="fixed bottom-8 right-8 text-center opacity-70 hover:opacity-100 transition-opacity duration-300"
       >
         <div 
