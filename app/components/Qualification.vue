@@ -58,10 +58,10 @@ interface Award {
 
 const education: Education[] = [
   {
-    title: '虚拟现实技术应用',
-    period: '2024 - 2027',
-    school: '深圳信息职业技术大学',
-    courses: '主修课程：虚拟现实引擎、C#'
+    title: '自动化技术与应用',
+    period: '2023 - 2027',
+    school: '南京工业职业技术大学',
+    courses: '主修课程：自动化技术与应用'
   }
 ]
 
@@ -70,61 +70,62 @@ const skills: Skill[] = [
     category: '前端开发',
     technologies: [
       { name: 'Astro', color: 'bg-orange-100 text-orange-800' },
-      { name: 'Vue', color: 'bg-blue-100 text-blue-800' }
+        { name: 'Vue', color: 'bg-blue-100 text-blue-800' },
+      { name: 'Nuxt', color: 'bg-green-100 text-green-800' }
     ]
   },
-  {
-    category: '虚拟现实',
-    technologies: [
-      { name: 'Unity', color: 'bg-blue-100 text-blue-800' },
-      { name: 'C#', color: 'bg-orange-100 text-orange-800' }
-    ]
-  },
-  {
-    category: '后端开发',
-    technologies: [
-      { name: 'C#', color: 'bg-purple-100 text-purple-800' },
-      { name: 'Node.js', color: 'bg-green-100 text-green-800' }
-    ]
-  },
-  {
-    category: '数据库',
-    technologies: [
-      { name: 'MySQL', color: 'bg-gray-100 text-gray-800' },
-      { name: 'Redis', color: 'bg-red-100 text-red-800' }
-    ]
-  }
+//   {
+//     category: '虚拟现实',
+//     technologies: [
+//       { name: 'Unity', color: 'bg-blue-100 text-blue-800' },
+//       { name: 'C#', color: 'bg-orange-100 text-orange-800' }
+//     ]
+//   },
+//   {
+//     category: '后端开发',
+//     technologies: [
+//       { name: 'C#', color: 'bg-purple-100 text-purple-800' },
+//       { name: 'Node.js', color: 'bg-green-100 text-green-800' }
+//     ]
+//   },
+//   {
+//     category: '数据库',
+//     technologies: [
+//       { name: 'MySQL', color: 'bg-gray-100 text-gray-800' },
+//       { name: 'Redis', color: 'bg-red-100 text-red-800' }
+//     ]
+//   }
 ]
 
-const workExperience: WorkExperience[] = [
-  {
-    position: '前端开发实习生',
-    period: '2024.06 - 2024.09',
-    company: '某某科技有限公司',
-    responsibilities: [
-      '参与公司主要产品的前端开发，使用Vue.js构建用户界面',
-      '优化页面性能，提升用户体验',
-      '与后端团队协作，完成API对接'
-    ],
-    isActive: true
-  },
-  {
-    position: '全栈开发实习生',
-    period: '2023.07 - 2023.09',
-    company: '某某互联网公司',
-    responsibilities: [
-      '独立开发小程序功能模块',
-      '参与后端API设计和开发',
-      '学习并应用敏捷开发流程'
-    ],
-    isActive: false
-  }
-]
+// const workExperience: WorkExperience[] = [
+//   {
+//     position: '前端开发实习生',
+//     period: '2024.06 - 2024.09',
+//     company: '某某科技有限公司',
+//     responsibilities: [
+//       '参与公司主要产品的前端开发，使用Vue.js构建用户界面',
+//       '优化页面性能，提升用户体验',
+//       '与后端团队协作，完成API对接'
+//     ],
+//     isActive: true
+//   },
+//   {
+//     position: '全栈开发实习生',
+//     period: '2023.07 - 2023.09',
+//     company: '某某互联网公司',
+//     responsibilities: [
+//       '独立开发小程序功能模块',
+//       '参与后端API设计和开发',
+//       '学习并应用敏捷开发流程'
+//     ],
+//     isActive: false
+//   }
+// ]
 
 const projects: Project[] = [
   {
     title: '个人主页',
-    description: '基于Nuxt的静态个人主页，支持RSS订阅博客文章、项目展示',
+    description: '基于Nuxt的静态个人主页Fumomo-nuxt自用',
     technologies: [
       { name: 'Nuxt', color: 'bg-blue-100 text-blue-800' },
       { name: 'Tailwind', color: 'bg-orange-100 text-orange-800' }
@@ -133,12 +134,12 @@ const projects: Project[] = [
     borderColor: 'border-blue-100'
   },
   {
-    title: '在线学习平台',
+    title: 'Nuxt-blog-v3',
     description: '课程管理和在线学习系统，包含视频播放和进度追踪',
     technologies: [
-      { name: 'C#', color: 'bg-purple-100 text-purple-800' },
-      { name: '.NET Core', color: 'bg-blue-100 text-blue-800' },
-      { name: 'MySQL', color: 'bg-gray-100 text-gray-800' }
+      { name: 'Nuxt', color: 'bg-purple-100 text-purple-800' },
+      { name: 'Vye', color: 'bg-blue-100 text-blue-800' },
+      { name: 'Ts', color: 'bg-gray-100 text-gray-800' }
     ],
     bgColor: 'bg-gradient-to-br from-green-50 to-emerald-50',
     borderColor: 'border-green-100'
@@ -147,25 +148,25 @@ const projects: Project[] = [
 
 const awards: Award[] = [
   {
-    title: '优秀学生',
-    subtitle: '2022-2023学年',
-    icon: 'fas fa-medal',
+    title: '英语四级',
+    subtitle: '2024学年',
+    icon: 'fas fa-language',
     bgColor: 'bg-yellow-50',
     borderColor: 'border-yellow-200',
     iconColor: 'text-yellow-500'
   },
   {
-    title: '编程竞赛三等奖',
-    subtitle: '2023年',
+    title: '计算机2级',
+    subtitle: '2024年',
     icon: 'fas fa-code',
     bgColor: 'bg-blue-50',
     borderColor: 'border-blue-200',
     iconColor: 'text-blue-500'
   },
   {
-    title: 'JLPT-N2证书',
-    subtitle: '日语能力测试N2级',
-    icon: 'fas fa-certificate',
+    title: '英语六级',
+    subtitle: '2025年',
+    icon: 'fas fa-language',
     bgColor: 'bg-green-50',
     borderColor: 'border-green-200',
     iconColor: 'text-green-500'
@@ -232,7 +233,7 @@ const awards: Award[] = [
 
 
     <!-- 工作经历 -->
-    <div v-if="siteConfig.qualificationSections.workExperience" class="mt-8">
+    <!-- <div v-if="siteConfig.qualificationSections.workExperience" class="mt-8">
       <h3 class="text-xl font-semibold text-primary mb-6 flex items-center">
         <i class="fas fa-briefcase mr-2"></i>
         工作经历
@@ -253,7 +254,7 @@ const awards: Award[] = [
           </ul>
         </div>
       </div>
-    </div>
+    </div> -->
 
     <!-- 项目经历 -->
     <div v-if="siteConfig.qualificationSections.projects" class="mt-8">

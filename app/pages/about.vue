@@ -56,11 +56,15 @@ const handleWheel = (event: WheelEvent) => {
 onMounted(() => {
   // 检测移动设备
   isMobile.value = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) || window.innerWidth < 768
-  
-  // 监听窗口大小变化
-  const handleResize = () => {
-    isMobile.value = window.innerWidth < 768
-  }
+})
+
+// 处理窗口大小变化
+const handleResize = () => {
+  isMobile.value = window.innerWidth < 768
+}
+
+// 添加事件监听器
+onMounted(() => {
   window.addEventListener('resize', handleResize)
   
   if (import.meta.client) {
@@ -69,16 +73,17 @@ onMounted(() => {
   if (import.meta.client && !isMobile.value && siteConfig.theme.scrollNavigation) {
     window.addEventListener('wheel', handleWheel, { passive: false })
   }
-  
-  onUnmounted(() => {
-    if (import.meta.client) {
-      window.removeEventListener('scroll', handleScroll)
-      window.removeEventListener('resize', handleResize)
-    }
-    if (import.meta.client && !isMobile.value && siteConfig.theme.scrollNavigation) {
-      window.removeEventListener('wheel', handleWheel)
-    }
-  })
+})
+
+// 清理事件监听器
+onUnmounted(() => {
+  if (import.meta.client) {
+    window.removeEventListener('scroll', handleScroll)
+    window.removeEventListener('resize', handleResize)
+  }
+  if (import.meta.client && !isMobile.value && siteConfig.theme.scrollNavigation) {
+    window.removeEventListener('wheel', handleWheel)
+  }
 })
 </script>
 

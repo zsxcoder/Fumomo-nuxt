@@ -25,17 +25,30 @@ const isMobile = ref(false)
 // 路由导航
 const router = useRouter()
 
-onMounted(() => {
-  // 检测移动设备
-  const checkMobile = () => {
-    const isMobileUA = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)
-    const isMobileWidth = window.innerWidth <= 768
-    isMobile.value = isMobileUA || isMobileWidth
+// 检测移动设备
+const checkMobile = () => {
+  const isMobileUA = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)
+  const isMobileWidth = window.innerWidth <= 768
+  isMobile.value = isMobileUA || isMobileWidth
+}
+
+// 添加滚轮事件监听（仅在非移动端）
+const handleWheel = (e: WheelEvent) => {
+  // 只有向下滚动且还没开始分散动画时才触发
+  if (e.deltaY > 0 && !isScattering.value) {
+    e.preventDefault()
+    startScatterAnimation()
   }
-  
+}
+
+// 检测移动设备和添加事件监听器
+onMounted(() => {
   checkMobile()
   window.addEventListener('resize', checkMobile)
+})
 
+// 触发动画序列
+onMounted(() => {
   // 触发动画序列
   setTimeout(() => {
     if (logoRef.value) logoRef.value.classList.add('bounce-in')
@@ -48,30 +61,20 @@ onMounted(() => {
   setTimeout(() => {
     if (contentRef.value) contentRef.value.classList.add('fade-in-delayed')
   }, 800)
+})
 
-  // 添加滚轮事件监听（仅在非移动端）
-  const handleWheel = (e: WheelEvent) => {
-    // 只有向下滚动且还没开始分散动画时才触发
-    if (e.deltaY > 0 && !isScattering.value) {
-      e.preventDefault()
-      startScatterAnimation()
-    }
-  }
-
-  // 绑定滚轮事件（仅在非移动端、客户端且配置启用时）
+// 绑定滚轮事件（仅在非移动端、客户端且配置启用时）
+onMounted(() => {
   if (import.meta.client && !isMobile.value && siteConfig.theme.scrollNavigation) {
     document.addEventListener('wheel', handleWheel, { passive: false })
-    
-    // 清理函数
-    onUnmounted(() => {
-      document.removeEventListener('wheel', handleWheel)
-      window.removeEventListener('resize', checkMobile)
-    })
-  } else {
-    // 如果未启用滚动导航，只清理 resize 监听器
-    onUnmounted(() => {
-      window.removeEventListener('resize', checkMobile)
-    })
+  }
+})
+
+// 清理事件监听器
+onUnmounted(() => {
+  window.removeEventListener('resize', checkMobile)
+  if (import.meta.client && !isMobile.value && siteConfig.theme.scrollNavigation) {
+    document.removeEventListener('wheel', handleWheel)
   }
 })
 

@@ -62,52 +62,52 @@ const handleWheel = (event: WheelEvent) => {
   }
 }
 
+// 检测是否为移动设备
 onMounted(() => {
-  // 检测移动设备
   isMobile.value = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) || window.innerWidth < 768
-  
-  // 监听窗口大小变化
-  const handleResize = () => {
-    isMobile.value = window.innerWidth < 768
-  }
+})
+
+// 处理窗口大小变化
+const handleResize = () => {
+  isMobile.value = window.innerWidth < 768
+}
+
+// 添加事件监听器
+onMounted(() => {
   window.addEventListener('resize', handleResize)
-  
   if (import.meta.client) {
     window.addEventListener('scroll', handleScroll)
   }
   if (import.meta.client && !isMobile.value && siteConfig.theme.scrollNavigation) {
     window.addEventListener('wheel', handleWheel, { passive: false })
   }
-  
-  // 检测所有网站状态（如果开启了状态检测）
+})
+
+// 检测所有网站状态（如果开启了状态检测）
+let statusCheckInterval: NodeJS.Timeout | null = null
+
+onMounted(() => {
   if (statusCheckConfig.enable) {
     checkAllWebsites()
     
     // 自动重新检测（使用配置的间隔时间）
-    const statusCheckInterval = setInterval(() => {
+    statusCheckInterval = setInterval(() => {
       checkAllWebsites()
     }, statusCheckConfig.autoRefreshInterval)
-    
-    onUnmounted(() => {
-      if (import.meta.client) {
-        window.removeEventListener('scroll', handleScroll)
-        window.removeEventListener('resize', handleResize)
-      }
-      if (import.meta.client && !isMobile.value && siteConfig.theme.scrollNavigation) {
-        window.removeEventListener('wheel', handleWheel)
-      }
-      clearInterval(statusCheckInterval)
-    })
-  } else {
-    onUnmounted(() => {
-      if (import.meta.client) {
-        window.removeEventListener('scroll', handleScroll)
-        window.removeEventListener('resize', handleResize)
-      }
-      if (import.meta.client && !isMobile.value && siteConfig.theme.scrollNavigation) {
-        window.removeEventListener('wheel', handleWheel)
-      }
-    })
+  }
+})
+
+// 清理事件监听器
+onUnmounted(() => {
+  if (import.meta.client) {
+    window.removeEventListener('scroll', handleScroll)
+    window.removeEventListener('resize', handleResize)
+  }
+  if (import.meta.client && !isMobile.value && siteConfig.theme.scrollNavigation) {
+    window.removeEventListener('wheel', handleWheel)
+  }
+  if (statusCheckInterval) {
+    clearInterval(statusCheckInterval)
   }
 })
 

@@ -1,6 +1,9 @@
 <script setup lang="ts">
-import { ref, onMounted, onUnmounted, watch } from 'vue'
-import { siteConfig } from '../config/index'
+import { ref, computed, onMounted, onUnmounted, watch } from 'vue'
+import { siteConfig, type NavigationItem } from '../config/index'
+
+// 导航菜单项类型定义，使用从配置文件中导入的类型
+type MenuItem = NavigationItem
 
 interface Props {
   currentPage?: string
@@ -12,6 +15,13 @@ const props = withDefaults(defineProps<Props>(), {
 
 const isMenuOpen = ref(false)
 const route = useRoute()
+const openDropdowns = ref<Set<string>>(new Set())
+
+// 获取导航菜单配置，现在直接从配置文件中读取子菜单
+const navigationWithChildren = computed<MenuItem[]>(() => {
+  // 直接返回配置中的导航菜单，已经包含了子菜单结构
+  return siteConfig.navigation
+})
 
 const toggleMobileMenu = () => {
   isMenuOpen.value = !isMenuOpen.value
@@ -19,6 +29,78 @@ const toggleMobileMenu = () => {
 
 const closeMenu = () => {
   isMenuOpen.value = false
+  openDropdowns.value.clear()
+}
+
+// 切换下拉菜单
+const toggleDropdown = (key: string, event?: Event, isMobileMenu = false) => {
+  if (event) {
+    event.preventDefault()
+  }
+  
+  // 如果是移动端菜单，不要关闭其他菜单
+  if (isMobileMenu) {
+    if (openDropdowns.value.has(key)) {
+      openDropdowns.value.delete(key)
+    } else {
+      openDropdowns.value.add(key)
+    }
+  } else {
+    // 桌面端菜单，关闭其他菜单
+    if (openDropdowns.value.has(key)) {
+      openDropdowns.value.delete(key)
+    } else {
+      openDropdowns.value.clear()
+      openDropdowns.value.add(key)
+    }
+  }
+}
+
+// 关闭指定的下拉菜单
+const closeDropdown = (key: string) => {
+  openDropdowns.value.delete(key)
+}
+
+// 关闭所有下拉菜单
+const closeAllDropdowns = () => {
+  openDropdowns.value.clear()
+}
+
+// 判断菜单项是否为当前页面
+const isCurrentPage = (item: MenuItem) => {
+  return props.currentPage === item.key || 
+         (item.children && item.children.some(child => props.currentPage === child.key))
+}
+
+// 计算下拉菜单位置，确保在视口内
+const getDropdownPosition = (key: string) => {
+  if (import.meta.server) return { left: '50%', transform: 'translateX(-50%)' }
+  
+  const dropdownWidth = 192 // w-48 = 12rem = 192px
+  const viewportWidth = window.innerWidth
+  
+  // 默认居中定位
+  let left = '50%'
+  let transform = 'translateX(-50%)'
+  
+  // 如果屏幕较小，调整定位策略
+  if (viewportWidth < 768) {
+    // 移动端右侧对齐
+    left = 'auto'
+    transform = 'none'
+    return { right: '1rem', left, transform }
+  } else if (viewportWidth < 1024) {
+    // 平板端稍微右移
+    left = '60%'
+  }
+  
+  return { left, transform }
+}
+
+// 检测是否为移动设备
+const isMobileDevice = () => {
+  if (import.meta.server) return false
+  return window.innerWidth < 768 || /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)
 }
 
 // 监听路由变化关闭菜单
@@ -26,14 +108,20 @@ watch(() => route.path, () => {
   closeMenu()
 })
 
+// 监听窗口大小变化，关闭所有下拉菜单
+const handleResize = () => {
+  closeAllDropdowns()
+}
+
 let clickOutsideHandler: ((e: Event) => void) | null = null
 let escapeHandler: ((e: KeyboardEvent) => void) | null = null
+let resizeHandler: ((e: Event) => void) | null = null
 
 onMounted(() => {
   // 监听点击外部区域关闭菜单
   clickOutsideHandler = (e: Event) => {
     const target = e.target as HTMLElement
-    if (!target.closest('#nav-toggle') && !target.closest('#nav-menu')) {
+    if (!target.closest('#nav-toggle') && !target.closest('#nav-menu') && !target.closest('.mobile-menu-container')) {
       closeMenu()
     }
   }
@@ -48,6 +136,10 @@ onMounted(() => {
   }
   
   document.addEventListener('keydown', escapeHandler)
+  
+  // 监听窗口大小变化
+  resizeHandler = handleResize
+  window.addEventListener('resize', resizeHandler)
 })
 
 onUnmounted(() => {
@@ -56,6 +148,9 @@ onUnmounted(() => {
   }
   if (escapeHandler) {
     document.removeEventListener('keydown', escapeHandler)
+  }
+  if (resizeHandler) {
+    window.removeEventListener('resize', resizeHandler)
   }
 })
 </script>
@@ -83,16 +178,72 @@ onUnmounted(() => {
         </button>
 
         <!-- 桌面端菜单 -->
-        <ul class="hidden md:flex list-none m-0 p-0 gap-8">
-          <li v-for="item in siteConfig.navigation.slice(1)" :key="item.key">
-            <NuxtLink 
-              :to="item.href" 
-              class="no-underline font-medium transition-all duration-300 relative py-2 px-4 rounded-full nav-link hover:-translate-y-0.5"
-              :class="currentPage === item.key ? 'bg-primary/10 text-primary' : 'text-muted hover:text-primary'"
+        <ul class="hidden md:flex list-none m-0 p-0 gap-6 items-center" id="nav-menu">
+          <template v-for="item in navigationWithChildren.slice(1)" :key="item.key">
+            <li 
+              v-if="!item.children"
+              class="relative"
             >
-              {{ item.name }}
-            </NuxtLink>
-          </li>
+              <NuxtLink 
+                :to="item.href" 
+                class="no-underline font-medium transition-all duration-300 relative py-2 px-4 rounded-full nav-link hover:-translate-y-0.5 flex items-center"
+                :class="currentPage === item.key ? 'bg-primary/10 text-primary' : 'text-muted hover:text-primary'"
+              >
+                {{ item.name }}
+              </NuxtLink>
+            </li>
+            
+            <!-- 带有子菜单的菜单项 -->
+            <li 
+              v-else
+              class="relative group"
+              @mouseenter="!isMobileDevice() && toggleDropdown(item.key)"
+              @mouseleave="!isMobileDevice() && closeDropdown(item.key)"
+            >
+              <button
+                class="no-underline font-medium transition-all duration-300 relative py-2 px-4 rounded-full nav-link hover:-translate-y-0.5 flex items-center gap-1"
+                :class="isCurrentPage(item) ? 'bg-primary/10 text-primary' : 'text-muted hover:text-primary'"
+                @click="toggleDropdown(item.key, $event)"
+                :aria-expanded="openDropdowns.has(item.key)"
+                :aria-haspopup="true"
+                :aria-controls="`${item.key}-dropdown`"
+              >
+                {{ item.name }}
+                <i class="fas fa-chevron-down text-xs transition-transform duration-200" 
+                   :class="openDropdowns.has(item.key) ? 'rotate-180' : ''"></i>
+              </button>
+              
+              <!-- 子菜单下拉框 -->
+              <Transition
+                enter-active-class="transition-all duration-200 ease-out"
+                leave-active-class="transition-all duration-150 ease-in"
+                enter-from-class="opacity-0 scale-95 -translate-y-2"
+                enter-to-class="opacity-100 scale-100 translate-y-0"
+                leave-from-class="opacity-100 scale-100 translate-y-0"
+                leave-to-class="opacity-0 scale-95 -translate-y-2"
+              >
+                <div 
+                  v-show="openDropdowns.has(item.key) || false"
+                  class="absolute top-full mt-2 w-48 bg-white/95 backdrop-blur-md shadow-lg border border-primary/10 rounded-xl z-50 overflow-hidden dropdown-menu"
+                  :id="`${item.key}-dropdown`"
+                  :style="getDropdownPosition(item.key)"
+                >
+                  <ul class="list-none m-0 p-2">
+                    <li v-for="child in item.children" :key="child.key" class="w-full">
+                      <NuxtLink 
+                        :to="child.href" 
+                        class="no-underline font-medium transition-all duration-200 relative py-2.5 px-4 rounded-lg block hover:bg-primary/10 text-sm text-center"
+                        :class="currentPage === child.key ? 'bg-primary/10 text-primary' : 'text-muted hover:text-primary'"
+                        @click="closeMenu"
+                      >
+                        {{ child.name }}
+                      </NuxtLink>
+                    </li>
+                  </ul>
+                </div>
+              </Transition>
+            </li>
+          </template>
         </ul>
       </div>
     </nav>
@@ -115,19 +266,65 @@ onUnmounted(() => {
     >
       <div 
         v-if="isMenuOpen"
-        class="fixed top-16 right-4 w-48 bg-white/95 backdrop-blur-md shadow-lg border border-primary/10 rounded-lg z-50 py-3 px-3 md:hidden"
+        class="mobile-menu-container fixed top-16 right-4 w-56 bg-white/95 backdrop-blur-md shadow-lg border border-primary/10 rounded-xl z-50 py-3 px-3 md:hidden max-h-[calc(100vh-88px)] overflow-y-auto"
       >
         <ul class="list-none m-0 p-0 flex flex-col gap-1">
-          <li v-for="item in siteConfig.navigation.slice(1)" :key="item.key" class="w-full">
-            <NuxtLink 
-              :to="item.href" 
-              class="no-underline font-medium transition-all duration-300 relative py-2 px-3 rounded-md block hover:bg-primary/10 text-center text-sm"
-              :class="currentPage === item.key ? 'bg-primary/10 text-primary' : 'text-muted hover:text-primary'"
-              @click="closeMenu"
-            >
-              {{ item.name }}
-            </NuxtLink>
-          </li>
+          <template v-for="item in navigationWithChildren.slice(1)" :key="item.key">
+            <!-- 无子菜单项 -->
+            <li v-if="!item.children" class="w-full">
+              <NuxtLink 
+                :to="item.href" 
+                class="no-underline font-medium transition-all duration-300 relative py-2.5 px-3 rounded-lg block hover:bg-primary/10 text-center text-sm"
+                :class="currentPage === item.key ? 'bg-primary/10 text-primary' : 'text-muted hover:text-primary'"
+                @click="closeMenu"
+              >
+                {{ item.name }}
+              </NuxtLink>
+            </li>
+            
+            <!-- 带有子菜单的菜单项 -->
+            <li v-else class="w-full">
+              <button
+                class="no-underline font-medium transition-all duration-300 relative py-2.5 px-3 rounded-lg block w-full text-center text-sm hover:bg-primary/10 flex items-center justify-center gap-2"
+                :class="isCurrentPage(item) ? 'bg-primary/10 text-primary' : 'text-muted hover:text-primary'"
+                @click.stop="toggleDropdown(item.key, $event, true)"
+                :aria-expanded="openDropdowns.has(item.key)"
+                :aria-haspopup="true"
+                :aria-controls="`${item.key}-mobile-dropdown`"
+              >
+                <span>{{ item.name }}</span>
+                <i class="fas fa-chevron-down text-xs transition-transform duration-200" 
+                   :class="openDropdowns.has(item.key) ? 'rotate-180' : ''"></i>
+              </button>
+              
+              <!-- 移动端子菜单 -->
+              <Transition
+                enter-active-class="transition-all duration-200 ease-out"
+                leave-active-class="transition-all duration-150 ease-in"
+                enter-from-class="opacity-0 -translate-y-2 max-h-0"
+                enter-to-class="opacity-100 translate-y-0 max-h-96"
+                leave-from-class="opacity-100 translate-y-0 max-h-96"
+                leave-to-class="opacity-0 -translate-y-2 max-h-0"
+              >
+                <ul 
+                  v-show="openDropdowns.has(item.key) || false"
+                  class="list-none m-0 p-0 pl-2 pr-1 flex flex-col gap-1 mt-1 overflow-hidden"
+                  :id="`${item.key}-mobile-dropdown`"
+                >
+                  <li v-for="child in item.children" :key="child.key" class="w-full">
+                    <NuxtLink 
+                      :to="child.href" 
+                      class="no-underline font-medium transition-all duration-200 relative py-2 px-3 rounded-lg block hover:bg-primary/10 text-sm text-center"
+                      :class="currentPage === child.key ? 'bg-primary/10 text-primary' : 'text-muted hover:text-primary'"
+                      @click="closeMenu"
+                    >
+                      {{ child.name }}
+                    </NuxtLink>
+                  </li>
+                </ul>
+              </Transition>
+            </li>
+          </template>
         </ul>
       </div>
     </Transition>
@@ -163,6 +360,11 @@ onUnmounted(() => {
   color: #8b5a8c !important;
 }
 
+/* 下拉菜单样式 - 适配博客风格 */
+.group:hover .group-hover\:block {
+  display: block;
+}
+
 /* 移动端菜单项样式 */
 @media (max-width: 768px) {
   .mobile-menu .nav-link {
@@ -186,6 +388,142 @@ onUnmounted(() => {
   .mobile-menu .nav-link.router-link-active {
     background-color: rgba(139, 90, 140, 0.15);
     color: #8b5a8c;
+  }
+  
+  /* 优化移动端菜单滚动 */
+  .max-h-\[calc\(100vh-88px\)\] {
+    scrollbar-width: thin;
+    scrollbar-color: rgba(139, 90, 140, 0.3) transparent;
+  }
+  
+  .max-h-\[calc\(100vh-88px\)\]::-webkit-scrollbar {
+    width: 4px;
+  }
+  
+  .max-h-\[calc\(100vh-88px\)\]::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  
+  .max-h-\[calc\(100vh-88px\)\]::-webkit-scrollbar-thumb {
+    background-color: rgba(139, 90, 140, 0.3);
+    border-radius: 4px;
+  }
+}
+
+/* 多级菜单适配博客样式 */
+#nav-menu .group .nav-link::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  width: 0;
+  height: 2px;
+  background-color: #8b5a8c;
+  transition: all 0.3s ease;
+  transform: translateX(-50%);
+}
+
+#nav-menu .group:hover .nav-link::after {
+  width: 80%;
+}
+
+/* 子菜单项动画效果 */
+#nav-menu ul li {
+  position: relative;
+  transition: all 0.2s ease;
+}
+
+#nav-menu ul li::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 0;
+  height: 100%;
+  background: linear-gradient(90deg, rgba(139, 90, 140, 0.05) 0%, rgba(255, 238, 248, 0.2) 100%);
+  transition: width 0.3s ease;
+  border-radius: 8px;
+  z-index: -1;
+}
+
+#nav-menu ul li:hover::before {
+  width: 100%;
+}
+
+/* 子菜单焦点样式 */
+#nav-menu button:focus-visible {
+  outline: 2px solid rgba(139, 90, 140, 0.5);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+/* 确保下拉菜单在移动端可访问 */
+@media (max-width: 768px) {
+  [aria-expanded="true"] + div {
+    display: block !important;
+  }
+}
+
+/* 添加过渡效果，使下拉菜单平滑出现 */
+.dropdown-enter-active,
+.dropdown-leave-active {
+  transition: all 0.3s ease;
+}
+
+.dropdown-enter-from,
+.dropdown-leave-to {
+  opacity: 0;
+  transform: translateY(-10px) scale(0.95);
+}
+
+/* 响应式调整 */
+@media (max-width: 1024px) {
+  .dropdown-menu {
+    left: 60% !important;
+    transform: translateX(-60%) !important;
+  }
+}
+
+@media (max-width: 768px) {
+  .dropdown-menu {
+    right: 1rem !important;
+    left: auto !important;
+    transform: none !important;
+  }
+}
+
+/* 触摸设备优化 */
+@media (hover: none) {
+  .group:hover .nav-link::after {
+    width: 0; /* 在触摸设备上不显示下划线 */
+  }
+  
+  /* 增大触摸目标 */
+  #nav-menu button {
+    min-height: 44px;
+    min-width: 44px;
+  }
+}
+
+/* 确保桌面端菜单项对齐 */
+#nav-menu li {
+  display: flex;
+  align-items: center;
+}
+
+#nav-menu .nav-link {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 44px;
+}
+
+/* 确保移动端菜单项对齐 */
+@media (max-width: 768px) {
+  #nav-menu li {
+    display: flex;
+    align-items: center;
+    justify-content: center;
   }
 }
 </style>

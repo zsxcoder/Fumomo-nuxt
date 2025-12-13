@@ -1,3 +1,4 @@
+
 // ========================================
 //  Fumomo 网站配置文件
 // ========================================
@@ -19,16 +20,16 @@ export const siteConfig = {
     // ========================================
     site: {
         // 网站标题 - 显示在浏览器标签页和导航栏
-        title: "Haku Fumomo-Nuxt",
+        title: "ZSXの主页",
 
         // 网站副标题 - 显示在首页标题下方
-        subtitle: "你好，欢迎来到Haku的个人主页Fumomo！",
+        subtitle: "你好，欢迎来到钟神秀的个人主页！",
 
         // 网站描述 - 用于SEO和社交媒体分享
-        description: "欢迎来到Haku Fumomo的温柔世界，在这里分享技术、生活和思考",
+        description: "欢迎来到ZSXの主页，在这里分享技术、生活和资源。",
 
         // 网站URL - 完整的域名地址
-        url: "https://haku.sakura.ink",
+        url: "https://home.mcyzsx.top",
     },
 
     // ========================================
@@ -40,7 +41,8 @@ export const siteConfig = {
         pageTitle: "我的文章",
 
         // 文章页面描述
-        pageDescription: "技术分享与生活感悟",
+        pageDescription: "技术分享]生活感悟与资源分享",
+
 
         // 每页显示文章数量
         postsPerPage: 10,
@@ -54,10 +56,11 @@ export const siteConfig = {
     // ========================================
     home: {
         // 主标题（通常使用site.title）
-        mainTitle: "Fumomo",
+        mainTitle: "ZSXの主页",
+
 
         // 欢迎语句
-        welcomeText: "一个充满温暖与创意的小窝",
+        welcomeText: "欢迎来到我的个人主页！这里是分享技术、生活和创意的地方。",
 
         // 首页特色介绍卡片 - 可以自由修改图标、标题和描述
         features: [
@@ -70,8 +73,8 @@ export const siteConfig = {
                 description: "记录日常生活中的美好瞬间和感悟",
             },
             {
-                title: "创意项目",
-                description: "展示个人项目和创意作品",
+                title: "资源分享",
+                description: "我在这里分享好用的项目、工具和资源",
             },
         ],
     },
@@ -98,6 +101,18 @@ export const siteConfig = {
             title: "友链",
             description: "欢迎加入我的友链交流",
         },
+        fcircle: {
+            title: "友链朋友圈",
+            description: "朋友们的最新文章",
+        },
+        essays: {
+            title: "随笔",
+            description: "记录生活点滴，一些想法和生活",
+        },
+        sponsor: {
+            title: "赞助支持",
+            description: "感谢您的支持，让这个网站能够持续发展",
+        },
         website: {
             title: "我的网站",
             description: "正在运行的网站信息",
@@ -116,20 +131,20 @@ export const siteConfig = {
     // ========================================
     personal: {
         // 基本信息
-        name: "Haku",
-        bio: "平时喜欢整点新奇玩意，喜欢做点小项目。",
-        hobby: "编程开发、网页设计",
-        location: "广东深圳",
-        learning: "Astro、VUE、C#",
-        avatar: "https://q2.qlogo.cn/headimg_dl?dst_uin=2731443459&spec=5",
+        name: "钟神秀",
+        bio: "每一段旅程，都有终点~",
+        hobby: "小说、单机游戏、编程等",
+        location: "江苏苏州",
+        learning: "Astro、VUE、Nuxt",
+        avatar: "https://cdn.jsdelivr.net/gh/zsxcoder/picx-images-hosting@master/avatar/zsxcoder.webp",
 
         // 关于页面社交媒体链接
         social: {
-            github: "https://github.com/Hakutyan-bai",
-            email: "lzj159035@foxmail.com",
+            github: "https://github.com/zsxcoder",
+            email: "me@mcyzsx.top",
         },
         blog: {
-            url: "https://blog.sakura.ink",
+            url: "https://blog.mcyzsx.top",
         },
     },
 
@@ -152,10 +167,40 @@ export const siteConfig = {
     // 导航菜单
     navigation: [
         { name: "首页", href: "/", key: "home" },
-        { name: "文章", href: "/articles", key: "articles" },
+        { 
+            name: "文章", 
+            href: "/articles", 
+            key: "articles",
+            // children: [
+            //     { name: "技术文章", href: "/articles?category=tech", key: "articles-tech" },
+            //     { name: "生活随笔", href: "/articles?category=life", key: "articles-life" },
+            //     { name: "资源分享", href: "/articles?category=resources", key: "articles-resources" },
+            //     { name: "全部文章", href: "/articles", key: "articles-all" }
+            // ]
+        },
         { name: "关于", href: "/about", key: "about" },
-        { name: "友链", href: "/friends", key: "friends" },
-        { name: "项目", href: "/projects", key: "projects" },
+        {
+            name: "友链",
+            href: "/friends",
+            key: "friends",
+            children:
+            [
+                { name: "友链朋友圈", href: "/fcircle", key: "fcircle" },
+            ]
+        },
+        { name: "随笔", href: "/essays", key: "essays" },
+        { name: "赞助支持", href: "/sponsor", key: "sponsor" },
+        { 
+            name: "项目", 
+            href: "/projects", 
+            key: "projects",
+            // children: [
+            //     { name: "开源项目", href: "/projects?type=opensource", key: "projects-opensource" },
+            //     { name: "个人作品", href: "/projects?type=personal", key: "projects-personal" },
+            //     { name: "实验项目", href: "/projects?type=experimental", key: "projects-experimental" },
+            //     { name: "全部项目", href: "/projects", key: "projects-all" }
+            // ]
+        },
         { name: "网站", href: "/website", key: "website" },
     ],
 
@@ -193,6 +238,14 @@ export const siteConfig = {
 // ========================================
 // 类型定义和辅助函数
 // ========================================
+
+// 导航菜单项类型定义
+export interface NavigationItem {
+    name: string;
+    href: string;
+    key: string;
+    children?: NavigationItem[];
+}
 
 // 页面类型定义
 export type PageKey = keyof typeof siteConfig.pages;

@@ -1,5 +1,7 @@
 <script setup lang="ts">
 // 我的历程组件
+import { marked } from 'marked'
+
 interface TimelineItem {
   date: string
   title: string
@@ -8,41 +10,37 @@ interface TimelineItem {
 
 const timelineItems: TimelineItem[] = [
   {
-    date: '2025.08.20',
-    title: '完成第一个项目',
-    description: '独立开发并上线了个人主页（也就是本站）'
+    date: '2025.11',
+    title: '开始不断重构博客',
+    description: '敲定了博客的框架，目前在重构名单里面的有[Mizuki](https://github.com/matsuzaka-yuki/Mizuki)、[Ryuchan](https://github.com/kobaridev/RyuChan)、[blog-v3(✅)](https://github.com/L33Z22L11/blog-v3)待续~'
   },
   {
-    date: '2025.06',
-    title: '重新上线博客',
-    description: '23年初WordPress被打之后，选择静态网站重新搭建博客。'
+    date: '2025.02~2025.11',
+    title: '不断测试博客框架',
+    description: '尝试过Hexo、Hugo、Jekyll、Vitepress和Vuepress等等，也试过动态的Typecho、Wordpress和Halo，目前觉得最舒服的还是Astro和Nuxt。'
   },
   {
-    date: '2025.05',
-    title: '第一次合作',
-    description: '与Hongxi合作开始开发项目，初识Vue，提升了自己的技术能力。'
+    date: '2025.02',
+    title: '初次接触blog-v3',
+    description: '在浏览GitHub的时候发现了<a href="https://github.com/L33Z22L11/blog-v3" target="_blank">**纸鹿**</a>大佬的Clarity博客，当时使用了喵洛阁为名称。'
   },
   {
-    date: '2024.09',
-    title: '进入大学',
-    description: '有了更多时间学习计算机科学与技术。'
-  },
-  {
-    date: '2022.09',
-    title: '第一个博客',
-    description: '使用WordPress搭建了我的第一个博客项目。'
-  },
-  {
-    date: '2022.04.05',
-    title: '注册了第二个域名',
-    description: '注册了第二个域名sakura.ink。当时觉得sakura很好听，我喜欢。'
-  },
-  {
-    date: '2020.07',
-    title: '接触到了前端三件套',
-    description: '学习了HTML、CSS和JavaScript，开始接触前端开发。'
+    date: '2024.11',
+    title: '初次接触博客',
+    description: '第一次接触的是<a href="https://github.com/miantiao-me/BroadcastChannel" target="_blank">**面条**</a>大佬的基于TG的微博客'
   }
 ]
+
+// 配置 marked 选项
+marked.setOptions({
+  breaks: true, // 支持换行
+  gfm: true, // 启用 GitHub Flavored Markdown
+})
+
+// 渲染 Markdown 内容的函数
+const renderMarkdown = (content: string) => {
+  return marked(content)
+}
 </script>
 
 <template>
@@ -60,7 +58,7 @@ const timelineItems: TimelineItem[] = [
           <div>
             <div class="text-sm text-gray-400">{{ item.date }}</div>
             <div class="font-semibold text-lg">{{ item.title }}</div>
-            <div class="text-gray-600 text-base">{{ item.description }}</div>
+            <div class="text-gray-600 text-base description-content" v-html="renderMarkdown(item.description)"></div>
           </div>
         </div>
       </li>
@@ -86,5 +84,47 @@ const timelineItems: TimelineItem[] = [
 
 .timeline::-webkit-scrollbar-thumb:hover {
   background: rgba(139, 90, 140, 0.5);
+}
+
+/* Markdown 渲染内容样式 */
+:deep(.description-content) {
+  line-height: 1.5;
+}
+
+:deep(.description-content p) {
+  margin: 0.5em 0;
+}
+
+:deep(.description-content p:first-child) {
+  margin-top: 0;
+}
+
+:deep(.description-content p:last-child) {
+  margin-bottom: 0;
+}
+
+:deep(.description-content ul) {
+  margin: 0.5em 0;
+  padding-left: 1.5em;
+}
+
+:deep(.description-content li) {
+  margin: 0.25em 0;
+}
+
+:deep(.description-content strong) {
+  font-weight: 600;
+  color: #8b5a8c;
+}
+
+:deep(.description-content a) {
+  color: #8b5a8c;
+  text-decoration: none;
+  transition: color 0.2s;
+}
+
+:deep(.description-content a:hover) {
+  color: #6a466b;
+  text-decoration: underline;
 }
 </style>

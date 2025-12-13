@@ -80,76 +80,80 @@ const formatDate = (dateString: string) => {
   })
 }
 
+// 检测是否为移动设备
+onMounted(() => {
+  isMobile.value = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) || window.innerWidth < 768
+})
+
+// 处理窗口大小变化
+const handleResize = () => {
+  isMobile.value = window.innerWidth < 768
+}
+
 // 页面加载时获取数据
 onMounted(() => {
-  // 检测移动设备
-  isMobile.value = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) || window.innerWidth < 768
-  
-  // 监听窗口大小变化
-  const handleResize = () => {
-    isMobile.value = window.innerWidth < 768
-  }
   window.addEventListener('resize', handleResize)
-  
   fetchRSSData()
+})
 
-  // 更新滚动进度
-  const updateScrollProgress = () => {
-    const scrollTop = window.pageYOffset || document.documentElement.scrollTop
-    const windowHeight = window.innerHeight
-    const documentHeight = document.documentElement.scrollHeight
-    const totalScrollable = documentHeight - windowHeight
-    
-    if (totalScrollable > 0) {
-      scrollProgress.value = Math.min(100, (scrollTop / totalScrollable) * 100)
-    }
-
-    // 检查是否到达底部
-    const distanceFromBottom = documentHeight - (scrollTop + windowHeight)
-    const isAtBottom = distanceFromBottom <= 50
-    
-    // 如果到达底部，标记为已到达
-    if (isAtBottom && !hasReachedBottom.value) {
-      hasReachedBottom.value = true
-    }
+// 更新滚动进度
+const updateScrollProgress = () => {
+  const scrollTop = window.pageYOffset || document.documentElement.scrollTop
+  const windowHeight = window.innerHeight
+  const documentHeight = document.documentElement.scrollHeight
+  const totalScrollable = documentHeight - windowHeight
+  
+  if (totalScrollable > 0) {
+    scrollProgress.value = Math.min(100, (scrollTop / totalScrollable) * 100)
   }
 
-  // 添加滚轮事件监听
-  const handleWheel = (e: WheelEvent) => {
-    // 检查是否已经滚动到页面底部
-    const scrollTop = window.pageYOffset || document.documentElement.scrollTop
-    const windowHeight = window.innerHeight
-    const documentHeight = document.documentElement.scrollHeight
-    
-    // 计算距离底部的距离（允许50px的误差）
-    const distanceFromBottom = documentHeight - (scrollTop + windowHeight)
-    const isAtBottom = distanceFromBottom <= 50
-    
-    // 只有向下滚动、已经到达过底部且还没开始分散动画时才触发
-    if (e.deltaY > 0 && hasReachedBottom.value && isAtBottom && !isScattering.value) {
-      e.preventDefault()
-      startScatterAnimation()
-    }
+  // 检查是否到达底部
+  const distanceFromBottom = documentHeight - (scrollTop + windowHeight)
+  const isAtBottom = distanceFromBottom <= 50
+  
+  // 如果到达底部，标记为已到达
+  if (isAtBottom && !hasReachedBottom.value) {
+    hasReachedBottom.value = true
   }
+}
 
-  // 绑定事件
+// 添加滚轮事件监听
+const handleWheel = (e: WheelEvent) => {
+  // 检查是否已经滚动到页面底部
+  const scrollTop = window.pageYOffset || document.documentElement.scrollTop
+  const windowHeight = window.innerHeight
+  const documentHeight = document.documentElement.scrollHeight
+  
+  // 计算距离底部的距离（允许50px的误差）
+  const distanceFromBottom = documentHeight - (scrollTop + windowHeight)
+  const isAtBottom = distanceFromBottom <= 50
+  
+  // 只有向下滚动、已经到达过底部且还没开始分散动画时才触发
+  if (e.deltaY > 0 && hasReachedBottom.value && isAtBottom && !isScattering.value) {
+    e.preventDefault()
+    startScatterAnimation()
+  }
+}
+
+// 绑定事件
+onMounted(() => {
   if (import.meta.client && !isMobile.value && siteConfig.theme.scrollNavigation) {
     document.addEventListener('wheel', handleWheel, { passive: false })
   }
   if (import.meta.client) {
     window.addEventListener('scroll', updateScrollProgress, { passive: true })
   }
+})
 
-  // 清理函数
-  onUnmounted(() => {
-    if (import.meta.client && !isMobile.value && siteConfig.theme.scrollNavigation) {
-      document.removeEventListener('wheel', handleWheel)
-    }
-    if (import.meta.client) {
-      window.removeEventListener('scroll', updateScrollProgress)
-      window.removeEventListener('resize', handleResize)
-    }
-  })
+// 清理函数
+onUnmounted(() => {
+  if (import.meta.client && !isMobile.value && siteConfig.theme.scrollNavigation) {
+    document.removeEventListener('wheel', handleWheel)
+  }
+  if (import.meta.client) {
+    window.removeEventListener('scroll', updateScrollProgress)
+    window.removeEventListener('resize', handleResize)
+  }
 })
 
 // 开始分散动画
