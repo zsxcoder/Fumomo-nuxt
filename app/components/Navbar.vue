@@ -193,25 +193,34 @@ onUnmounted(() => {
               </NuxtLink>
             </li>
             
-            <!-- 带有子菜单的菜单项 -->
+              <!-- 带有子菜单的菜单项 -->
             <li 
               v-else
               class="relative group"
               @mouseenter="!isMobileDevice() && toggleDropdown(item.key)"
               @mouseleave="!isMobileDevice() && closeDropdown(item.key)"
             >
-              <button
-                class="no-underline font-medium transition-all duration-300 relative py-2 px-4 rounded-full nav-link hover:-translate-y-0.5 flex items-center gap-1"
-                :class="isCurrentPage(item) ? 'bg-primary/10 text-primary' : 'text-muted hover:text-primary'"
-                @click="toggleDropdown(item.key, $event)"
-                :aria-expanded="openDropdowns.has(item.key)"
-                :aria-haspopup="true"
-                :aria-controls="`${item.key}-dropdown`"
-              >
-                {{ item.name }}
-                <i class="fas fa-chevron-down text-xs transition-transform duration-200" 
-                   :class="openDropdowns.has(item.key) ? 'rotate-180' : ''"></i>
-              </button>
+              <div class="flex items-center gap-1">
+                <!-- 菜单文字链接 -->
+                <NuxtLink 
+                  :to="item.href" 
+                  class="no-underline font-medium transition-all duration-300 relative py-2 px-4 rounded-full nav-link hover:-translate-y-0.5"
+                  :class="isCurrentPage(item) ? 'bg-primary/10 text-primary' : 'text-muted hover:text-primary'"
+                >
+                  {{ item.name }}
+                </NuxtLink>
+                <!-- 下拉箭头按钮 -->
+                <button
+                  class="flex items-center justify-center w-6 h-6 rounded-full hover:bg-primary/10 transition-colors"
+                  @click="toggleDropdown(item.key, $event)"
+                  :aria-expanded="openDropdowns.has(item.key)"
+                  :aria-haspopup="true"
+                  :aria-controls="`${item.key}-dropdown`"
+                >
+                  <i class="fas fa-chevron-down text-xs transition-transform duration-200" 
+                     :class="openDropdowns.has(item.key) ? 'rotate-180' : ''"></i>
+                </button>
+              </div>
               
               <!-- 子菜单下拉框 -->
               <Transition
@@ -284,18 +293,28 @@ onUnmounted(() => {
             
             <!-- 带有子菜单的菜单项 -->
             <li v-else class="w-full">
-              <button
-                class="no-underline font-medium transition-all duration-300 relative py-2.5 px-3 rounded-lg block w-full text-center text-sm hover:bg-primary/10 flex items-center justify-center gap-2"
-                :class="isCurrentPage(item) ? 'bg-primary/10 text-primary' : 'text-muted hover:text-primary'"
-                @click.stop="toggleDropdown(item.key, $event, true)"
-                :aria-expanded="openDropdowns.has(item.key)"
-                :aria-haspopup="true"
-                :aria-controls="`${item.key}-mobile-dropdown`"
-              >
-                <span>{{ item.name }}</span>
-                <i class="fas fa-chevron-down text-xs transition-transform duration-200" 
-                   :class="openDropdowns.has(item.key) ? 'rotate-180' : ''"></i>
-              </button>
+              <div class="flex items-center justify-between px-3 py-2.5">
+                <!-- 菜单文字链接 -->
+                <NuxtLink 
+                  :to="item.href" 
+                  class="no-underline font-medium transition-all duration-300 text-sm hover:bg-primary/10 rounded-lg px-3 py-2 flex-1 text-center"
+                  :class="isCurrentPage(item) ? 'bg-primary/10 text-primary' : 'text-muted hover:text-primary'"
+                  @click="closeMenu"
+                >
+                  {{ item.name }}
+                </NuxtLink>
+                <!-- 下拉箭头按钮 -->
+                <button
+                  class="flex items-center justify-center w-6 h-6 rounded-full hover:bg-primary/10 transition-colors ml-2"
+                  @click.stop="toggleDropdown(item.key, $event, true)"
+                  :aria-expanded="openDropdowns.has(item.key)"
+                  :aria-haspopup="true"
+                  :aria-controls="`${item.key}-mobile-dropdown`"
+                >
+                  <i class="fas fa-chevron-down text-xs transition-transform duration-200" 
+                     :class="openDropdowns.has(item.key) ? 'rotate-180' : ''"></i>
+                </button>
+              </div>
               
               <!-- 移动端子菜单 -->
               <Transition

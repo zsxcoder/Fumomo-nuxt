@@ -370,6 +370,23 @@ function searchLocation(location: string) {
     const searchUrl = `https://www.google.com/maps/search/${encodeURIComponent(location)}`;
     window.open(searchUrl, '_blank');
 }
+
+// 获取随笔摘要内容（用于引用）
+function getEssaySummary(item: any): string {
+    // 移除HTML标签，获取纯文本
+    const textContent = item.content.text
+        .replace(/<[^>]*>/g, '')
+        .replace(/&nbsp;/g, ' ')
+        .replace(/&lt;/g, '<')
+        .replace(/&gt;/g, '>')
+        .replace(/&amp;/g, '&')
+        .trim();
+    
+    // 如果内容过长，截取前100个字符
+    return textContent.length > 100 
+        ? textContent.substring(0, 100) + '...' 
+        : textContent;
+}
 </script>
 
 <template>
@@ -627,6 +644,14 @@ function searchLocation(location: string) {
                                         </div>
                                     </a>
                                 </div>
+                            </div>
+
+                            <!-- Giscus 评论区域 -->
+                            <div class="essay-comments">
+                                <GiscusComments 
+                                    :essay-id="`essay-${index}`"
+                                    :essay-content="getEssaySummary(item)"
+                                />
                             </div>
 
                             <!-- 底部区域 -->
@@ -1112,6 +1137,11 @@ function searchLocation(location: string) {
     justify-content: space-between;
     align-items: center;
     color: #999;
+}
+
+/* 评论区域 */
+.essay-comments {
+    margin-top: 0.5rem;
 }
 
 .essay-tags {
