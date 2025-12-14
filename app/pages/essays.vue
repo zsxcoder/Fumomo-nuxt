@@ -13,6 +13,9 @@ const pageConfig = {
     description: "记录生活点滴，一些想法和生活"
 };
 
+// 使用全局Toast函数
+const { $toast } = useNuxtApp();
+
 // 设置页面元数据
 useHead({
     title: `${pageConfig.title} - ${siteConfig.site.title}`,
@@ -369,6 +372,11 @@ function searchLocation(location: string) {
     if (!location) return;
     const searchUrl = `https://www.google.com/maps/search/${encodeURIComponent(location)}`;
     window.open(searchUrl, '_blank');
+    
+    // 显示提示信息
+    if ($toast) {
+        $toast(`正在搜索: ${location}`);
+    }
 }
 
 // 获取随笔摘要内容（用于引用）

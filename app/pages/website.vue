@@ -204,83 +204,83 @@ const checkAllWebsites = async () => {
 // 网站数据
 const websites: Website[] = [
   {
-    title: '个人主页',
-    description: '这是我的个人主页，也就是本站',
-    url: 'https://fumomo-nuxt.vercel.app/',
+    title: 'ZSXの主页',
+    description: '基于fumomo的主页自用',
+    url: 'https://home.mcyzsx.top/',
     linkText: '点击查看 →'
   },
   {
-    title: '个人博客',
-    description: '分享一些技术文章',
-    url: 'https://blog.sakura.ink',
+    title: '个人博客1',
+    description: '基于Astro的RyuChan主题自用',
+    url: 'https://boke.zsx815.top',
     linkText: '点击查看 →'
   },
   {
-    title: '站点监控',
-    description: '基于 UptimeRobot 接口',
-    url: 'https://jk.skura.me',
+    title: '个人博客2',
+    description: '基于纸鹿大佬的博客自用',
+    url: 'https://blog.mcyzsx.top',
     linkText: '查看站点状态 →'
   },
   {
-    title: 'Minecraft 服务器文档',
-    description: '服务器文档',
-    url: 'https://doc.sakura.ink/',
+    title: 'Cloudflare-imgbed',
+    description: '部署在cloudflare的图床',
+    url: 'https://imgbed.mcyzsx.top/',
     linkText: '点击查看 →'
   },
   {
-    title: '示例网站 1',
-    description: '这是一个示例网站的描述',
-    url: '#',
-    linkText: '示例链接 →'
+    title: '友链检测',
+    description: '柳神的友链检测网站自用',
+    url: 'https://check-flink.mcyzsx.top/',
+    linkText: '点击查看 →'
   },
   {
-    title: '示例网站 2',
-    description: '这是另一个示例网站的描述',
-    url: '#',
-    linkText: '示例链接 →'
+    title: '友链朋友圈',
+    description: '柳神的友链朋友圈自用',
+    url: 'https://fc.mcyzsx.top',
+    linkText: '点击查看 →'
   },
   {
-    title: '示例网站 3',
-    description: '更多示例网站内容',
-    url: '#',
-    linkText: '示例链接 →'
+    title: 'memos-cloudflare',
+    description: '基于Cloudflare的memos自用',
+    url: 'https://memos.mcyzsx.top/',
+    linkText: '点击查看 →'
   },
   {
-    title: '示例网站 4',
-    description: '展示分页功能的示例',
-    url: '#',
-    linkText: '示例链接 →'
+    title: 'Moment-Cloudflare',
+    description: '基于Cloudflare的Moment自用',
+    url: 'https://moment.mcyzsx.top/',
+    linkText: '点击查看 →'
   },
   {
-    title: '示例网站 5',
-    description: '测试分页效果',
-    url: '#',
-    linkText: '示例链接 →'
+    title: 'cfalbums',
+    description: '基于Cloudflare的相册自用',
+    url: 'https://gallery.mcyzsx.top/',
+    linkText: '点击查看 →'
   },
-  {
-    title: '示例网站 6',
-    description: '更多测试内容',
-    url: '#',
-    linkText: '示例链接 →'
-  },
-  {
-    title: '示例网站 7',
-    description: '第二页测试内容',
-    url: '#',
-    linkText: '示例链接 →'
-  },
-  {
-    title: '示例网站 8',
-    description: '继续测试分页',
-    url: '#',
-    linkText: '示例链接 →'
-  },
-  {
-    title: '示例网站 9',
-    description: '最后的测试内容',
-    url: '#',
-    linkText: '示例链接 →'
-  }
+//   {
+//     title: '示例网站 6',
+//     description: '更多测试内容',
+//     url: '#',
+//     linkText: '示例链接 →'
+//   },
+//   {
+//     title: '示例网站 7',
+//     description: '第二页测试内容',
+//     url: '#',
+//     linkText: '示例链接 →'
+//   },
+//   {
+//     title: '示例网站 8',
+//     description: '继续测试分页',
+//     url: '#',
+//     linkText: '示例链接 →'
+//   },
+//   {
+//     title: '示例网站 9',
+//     description: '最后的测试内容',
+//     url: '#',
+//     linkText: '示例链接 →'
+//   }
 ]
 
 // 计算分页数据
@@ -307,10 +307,10 @@ const formatResponseTime = (time?: number) => {
 <template>
   <div>
     <main class="flex flex-col items-center min-h-screen website-page pt-24" :class="{ 'dispersed': showDisperse }">
-      <section ref="websiteSectionRef" class="bg-white rounded-3xl shadow-lg p-12 max-w-4xl w-full mb-12 component-card"
+      <section ref="websiteSectionRef" class="bg-white dark:bg-gray-800 rounded-3xl shadow-lg p-12 max-w-4xl w-full mb-12 component-card"
                style="box-shadow: 0 4px 24px rgba(139,90,140,0.08);">
         <h1 class="text-primary text-4xl mb-2 text-center font-fumofumo">{{ pageConfig.title }}</h1>
-        <p v-if="'description' in pageConfig" class="text-muted text-xl text-center mb-8">{{ pageConfig.description }}</p>
+        <p v-if="'description' in pageConfig" class="text-muted dark:text-gray-300 text-xl text-center mb-8">{{ pageConfig.description }}</p>
 
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
           <a 
@@ -319,7 +319,7 @@ const formatResponseTime = (time?: number) => {
             :href="website.url" 
             target="_blank" 
             rel="noopener noreferrer" 
-            class="bg-gradient-to-br from-gray-50 to-pink-50 rounded-2xl p-6 text-center border border-gray-200 transition-all duration-200 hover:-translate-y-0.5 cursor-pointer no-underline text-inherit hover:shadow-lg relative"
+            class="bg-gradient-to-br from-gray-50 to-pink-50 dark:from-gray-700 dark:to-pink-900 rounded-2xl p-6 text-center border border-gray-200 dark:border-gray-600 transition-all duration-200 hover:-translate-y-0.5 cursor-pointer no-underline text-inherit hover:shadow-lg relative"
           >
             <!-- 状态指示器 -->
             <div v-if="statusCheckConfig.enable" class="absolute top-4 right-4 flex items-center gap-2">
@@ -327,8 +327,8 @@ const formatResponseTime = (time?: number) => {
                 v-if="getWebsiteStatus(website.url).status === 'checking'"
                 class="flex items-center gap-1.5"
               >
-                <div class="animate-spin rounded-full h-3 w-3 border-2 border-gray-300 border-t-primary"></div>
-                <span class="text-xs text-gray-500">检测中</span>
+                <div class="animate-spin rounded-full h-3 w-3 border-2 border-gray-300 dark:border-gray-600 border-t-primary"></div>
+                <span class="text-xs text-gray-500 dark:text-gray-400">检测中</span>
               </div>
               <div 
                 v-else-if="getWebsiteStatus(website.url).status === 'online'"
@@ -340,7 +340,7 @@ const formatResponseTime = (time?: number) => {
                   <div class="absolute inset-0 h-3 w-3 bg-green-500 rounded-full animate-ping opacity-75"></div>
                 </div>
                 <span class="text-xs text-green-600 font-medium">在线</span>
-                <span v-if="statusCheckConfig.showResponseTime && getWebsiteStatus(website.url).responseTime" class="text-xs text-gray-400">
+                <span v-if="statusCheckConfig.showResponseTime && getWebsiteStatus(website.url).responseTime" class="text-xs text-gray-400 dark:text-gray-500">
                   {{ formatResponseTime(getWebsiteStatus(website.url).responseTime) }}
                 </span>
               </div>
@@ -354,7 +354,7 @@ const formatResponseTime = (time?: number) => {
             </div>
             
             <h3 class="text-primary text-xl mb-2 font-fumofumo mt-2">{{ website.title }}</h3>
-            <p class="text-muted text-base leading-relaxed m-0">{{ website.description }}</p>
+            <p class="text-muted dark:text-gray-300 text-base leading-relaxed m-0">{{ website.description }}</p>
             <div class="mt-3 text-sm text-primary opacity-75">{{ website.linkText }}</div>
           </a>
         </div>
@@ -364,7 +364,7 @@ const formatResponseTime = (time?: number) => {
       <section 
         ref="paginationRef"
         v-if="totalPages > 1" 
-        class="bg-white rounded-2xl shadow-lg p-6 max-w-4xl w-full mb-12 component-card"
+        class="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-6 max-w-4xl w-full mb-12 component-card"
         style="box-shadow: 0 4px 24px rgba(139,90,140,0.08);"
       >
         <div class="flex justify-center items-center gap-2">
@@ -372,14 +372,14 @@ const formatResponseTime = (time?: number) => {
           <NuxtLink 
             v-if="currentPage > 1"
             :to="`/website?page=${currentPage - 1}`"
-            class="flex items-center gap-2 bg-gray-100 text-gray-700 px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 hover:bg-gray-200 hover:scale-105 no-underline"
+            class="flex items-center gap-2 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 hover:bg-gray-200 dark:hover:bg-gray-600 hover:scale-105 no-underline"
           >
             <i class="fas fa-chevron-left"></i>
             <span>上一页</span>
           </NuxtLink>
           <span 
             v-else
-            class="flex items-center gap-2 bg-gray-50 text-gray-400 px-4 py-2 rounded-lg text-sm font-medium cursor-not-allowed"
+            class="flex items-center gap-2 bg-gray-50 dark:bg-gray-800 text-gray-400 dark:text-gray-500 px-4 py-2 rounded-lg text-sm font-medium cursor-not-allowed"
           >
             <i class="fas fa-chevron-left"></i>
             <span>上一页</span>
@@ -397,7 +397,7 @@ const formatResponseTime = (time?: number) => {
               <NuxtLink 
                 v-else
                 :to="`/website?page=${pageNum}`"
-                class="bg-gray-100 text-gray-700 px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 hover:bg-gray-200 hover:scale-105 no-underline"
+                class="bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 hover:bg-gray-200 dark:hover:bg-gray-600 hover:scale-105 no-underline"
               >
                 {{ pageNum }}
               </NuxtLink>
@@ -408,14 +408,14 @@ const formatResponseTime = (time?: number) => {
           <NuxtLink 
             v-if="currentPage < totalPages"
             :to="`/website?page=${currentPage + 1}`"
-            class="flex items-center gap-2 bg-gray-100 text-gray-700 px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 hover:bg-gray-200 hover:scale-105 no-underline"
+            class="flex items-center gap-2 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 hover:bg-gray-200 dark:hover:bg-gray-600 hover:scale-105 no-underline"
           >
             <span>下一页</span>
             <i class="fas fa-chevron-right"></i>
           </NuxtLink>
           <span 
             v-else
-            class="flex items-center gap-2 bg-gray-50 text-gray-400 px-4 py-2 rounded-lg text-sm font-medium cursor-not-allowed"
+            class="flex items-center gap-2 bg-gray-50 dark:bg-gray-800 text-gray-400 dark:text-gray-500 px-4 py-2 rounded-lg text-sm font-medium cursor-not-allowed"
           >
             <span>下一页</span>
             <i class="fas fa-chevron-right"></i>
@@ -423,7 +423,7 @@ const formatResponseTime = (time?: number) => {
         </div>
         
         <!-- 分页信息 -->
-        <div class="text-center mt-4 text-gray-500 text-sm">
+        <div class="text-center mt-4 text-gray-500 dark:text-gray-400 text-sm">
           第 {{ currentPage }} 页，共 {{ totalPages }} 页 · 共 {{ totalItems }} 个网站
         </div>
         

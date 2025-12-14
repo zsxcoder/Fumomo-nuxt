@@ -1,0 +1,309 @@
+/* =========================
+   暗色模式样式
+   ========================= */
+
+/* 主题过渡效果 */
+.theme-transition * {
+  transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease !important;
+}
+
+/* 确保某些元素不受过渡影响 */
+.theme-transition img,
+.theme-transition video,
+.theme-transition iframe,
+.theme-transition .no-transition {
+  transition: none !important;
+}
+
+/* 项目页面特殊样式 */
+.dark .project-card {
+  background-color: #1f2937;
+  border-color: #374151;
+}
+
+.dark .project-card:hover {
+  background-color: #374151;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
+}
+
+/* 个人履历页面 */
+.dark .qualification-section {
+  background-color: #1f2937;
+  border-color: #374151;
+}
+
+.dark .qualification-card {
+  background-color: #374151;
+  border-color: #4b5563;
+}
+
+/* Myjourney 组件暗色模式 */
+.dark .timeline-section {
+  background-color: #1f2937;
+  border-color: #374151;
+}
+
+/* 确保链接在暗色模式下可见 */
+.dark a {
+  color: #a974a9;
+}
+
+.dark a:hover {
+  color: #c291cc;
+}
+
+/* 暗色模式背景 */
+.dark {
+  background-color: #111827;
+  color: #f3f4f6;
+}
+
+/* 导航栏暗色模式 */
+.dark #navbar {
+  background-color: rgba(17, 24, 39, 0.9);
+  border-bottom-color: rgba(55, 65, 81, 0.5);
+}
+
+.dark .mobile-menu-container {
+  background-color: rgba(17, 24, 39, 0.95);
+  border-color: rgba(55, 65, 81, 0.5);
+}
+
+/* 卡片暗色模式 */
+.dark .component-card,
+.dark .my-blog-card,
+.dark .apply-form,
+.dark .carousel-container {
+  background-color: #1f2937;
+  border-color: #374151;
+}
+
+/* 文章卡片暗色模式 */
+.dark .article-card,
+.dark .project-card,
+.dark .website-card {
+  background-color: #1f2937;
+  border-color: #374151;
+}
+
+.dark .article-card:hover,
+.dark .project-card:hover,
+.dark .website-card:hover {
+  background-color: #374151;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
+}
+
+/* 表单元素暗色模式 */
+.dark .styled-input,
+.dark .styled-textarea {
+  background-color: #374151;
+  border-color: #4b5563;
+  color: #f3f4f6;
+}
+
+.dark .styled-input:focus,
+.dark .styled-textarea:focus {
+  border-color: #8b5a8c;
+  box-shadow: 0 0 0 3px rgba(139, 90, 140, 0.2);
+}
+
+/* 代码块暗色模式 */
+.dark pre {
+  background-color: #1f2937;
+  border-color: #374151;
+}
+
+.dark code {
+  background-color: rgba(139, 90, 140, 0.1);
+  color: #f3f4f6;
+}
+
+/* 友链页面的博客信息卡片 */
+.dark .blog-desc {
+  background-color: rgba(139, 90, 140, 0.1);
+  color: #f3f4f6;
+}
+
+/* 头像轮播容器 */
+.dark .friends-avatar-carousel {
+  background-color: #1f2937;
+  border-color: #374151;
+}
+
+/* 个人资料区域 */
+.dark .profile,
+.dark .stat-card {
+  background-color: #1f2937;
+  border-color: #374151;
+}
+
+/* 动态列表 */
+.dark .essay-item {
+  background-color: #1f2937;
+  border-color: #374151;
+}
+
+/* 动态内容 */
+.dark .essay-content-link {
+  background: linear-gradient(rgba(139, 90, 140, 0.2), rgba(139, 90, 140, 0.2)) no-repeat center bottom / 100% 0.1em;
+}
+
+.dark .essay-content-link:hover {
+  background-size: 100% 100%;
+}
+
+/* 外部链接 */
+.dark .external-link {
+  background-color: #1f2937;
+  border-color: #374151;
+}
+
+.dark .external-link:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+}
+
+/* 豆瓣卡片 */
+.dark .douban-card {
+  background-color: #1f2937;
+}
+
+/* 滚动条暗色模式 */
+.dark ::-webkit-scrollbar-track {
+  background: rgba(55, 65, 81, 0.3);
+}
+
+.dark ::-webkit-scrollbar-thumb {
+  background: rgba(139, 90, 140, 0.5);
+}
+
+.dark ::-webkit-scrollbar-thumb:hover {
+  background: rgba(139, 90, 140, 0.7);
+}
+
+.dark html {
+  scrollbar-color: rgba(139, 90, 140, 0.5) rgba(55, 65, 81, 0.3);
+}
+
+/* 加载动画暗色模式 */
+.dark .loading-screen {
+  background: linear-gradient(135deg, #1f2937 0%, #111827 50%, #1f2937 100%);
+}
+
+.dark .fluffy-ball {
+  filter: invert(0.8);
+}
+
+/* 按钮暗色模式 */
+.dark .styled-button.cancel-btn {
+  background-color: #374151;
+  color: #d1d5db;
+}
+
+.dark .styled-button.cancel-btn:hover {
+  background-color: #4b5563;
+}
+
+/* 菜单项暗色模式 */
+.dark .mobile-menu a {
+  color: #d1d5db;
+}
+
+.dark .mobile-menu a:hover {
+  background-color: rgba(139, 90, 140, 0.2);
+  color: #8b5a8c;
+}
+
+/* Logo 暗色模式 */
+.dark .logo,
+.dark .font-fumofumo,
+.dark nav a[href="/"] {
+  color: #a974a9 !important;
+}
+
+/* 复制按钮暗色模式 */
+.dark .copy-button {
+  background: rgba(169, 116, 169, 0.2);
+  border-color: rgba(169, 116, 169, 0.3);
+  color: #a974a9;
+}
+
+.dark .copy-button:hover {
+  background: rgba(169, 116, 169, 0.3);
+  border-color: rgba(169, 116, 169, 0.4);
+}
+
+/* Toast 暗色模式 */
+.dark .toast-notification {
+  background-color: #a974a9;
+}
+
+/* 动画和过渡 */
+.dark * {
+  transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+/* 确保某些元素不受过渡影响 */
+.dark img,
+.dark video,
+.dark iframe,
+.dark .no-transition {
+  transition: none !important;
+}
+
+/* 特殊元素暗色模式 */
+.dark .text-primary {
+  color: #a974a9 !important;
+}
+
+.dark .text-muted {
+  color: #9ca3af !important;
+}
+
+.dark .bg-white {
+  background-color: #1f2937 !important;
+}
+
+.dark .border-primary\/10 {
+  border-color: rgba(169, 116, 169, 0.1) !important;
+}
+
+/* 主题切换按钮暗色模式特殊样式 */
+.dark .theme-toggle {
+  color: #fbbf24;
+}
+
+/* Giscus 评论暗色模式适配 */
+.dark .gsc-search-button {
+  background-color: #374151 !important;
+  border-color: #4b5563 !important;
+}
+
+.dark .gsc-input {
+  background-color: #374151 !important;
+  border-color: #4b5563 !important;
+  color: #f3f4f6 !important;
+}
+
+.dark .gsc-results {
+  background-color: #1f2937 !important;
+}
+
+.dark .gsc-result {
+  border-color: #374151 !important;
+}
+
+.dark .gsc-result-info {
+  color: #9ca3af !important;
+}
+
+.dark .gsc-title {
+  color: #a974a9 !important;
+}
+
+.dark .gsc-url {
+  color: #9ca3af !important;
+}
+
+.dark .gsc-thumbnail {
+  border-color: #374151 !important;
+}

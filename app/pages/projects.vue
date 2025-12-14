@@ -176,10 +176,10 @@ const displayedProjects = computed((): Project[] => {
 <template>
   <div>
     <main class="flex flex-col items-center min-h-screen projects-page pt-24" :class="{ 'dispersed': showDisperse }">
-      <section ref="projectsSectionRef" class="bg-white rounded-3xl shadow-lg p-12 max-w-4xl w-full mb-12 component-card"
+      <section ref="projectsSectionRef" class="bg-white dark:bg-gray-800 rounded-3xl shadow-lg p-12 max-w-4xl w-full mb-12 component-card"
                style="box-shadow: 0 4px 24px rgba(139,90,140,0.08);">
         <h1 class="text-primary text-4xl mb-2 text-center font-fumofumo">{{ pageConfig.title }}</h1>
-        <p v-if="'description' in pageConfig" class="text-muted text-xl text-center mb-8">{{ pageConfig.description }}</p>
+        <p v-if="'description' in pageConfig" class="text-muted dark:text-gray-300 text-xl text-center mb-8">{{ pageConfig.description }}</p>
 
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
           <!-- 项目卡片 -->
@@ -187,17 +187,17 @@ const displayedProjects = computed((): Project[] => {
             v-for="project in displayedProjects" 
             :key="project.title"
             :class="project.isPlaceholder ? 
-              'bg-gradient-to-br from-gray-50 to-blue-50 rounded-2xl p-6 border border-gray-200 transition-all duration-200 hover:-translate-y-0.5 hover:shadow-lg' :
-              'bg-gradient-to-br from-gray-50 to-pink-50 rounded-2xl p-6 border border-gray-200 transition-all duration-200 hover:-translate-y-0.5 hover:shadow-lg'"
+              'bg-gradient-to-br from-gray-50 to-blue-50 dark:from-gray-700 dark:to-blue-900 rounded-2xl p-6 border border-gray-200 dark:border-gray-600 transition-all duration-200 hover:-translate-y-0.5 hover:shadow-lg' :
+              'bg-gradient-to-br from-gray-50 to-pink-50 dark:from-gray-700 dark:to-pink-900 rounded-2xl p-6 border border-gray-200 dark:border-gray-600 transition-all duration-200 hover:-translate-y-0.5 hover:shadow-lg'"
           >
             <div class="text-center mb-4">
               <h3 class="text-primary text-xl mb-2 font-fumofumo">{{ project.title }}</h3>
-              <p class="text-muted text-base leading-relaxed">{{ project.description }}</p>
+              <p class="text-muted dark:text-gray-300 text-base leading-relaxed">{{ project.description }}</p>
             </div>
             
             <div class="flex justify-center items-center gap-3 mt-4">
               <!-- 占位符项目的特殊按钮 -->
-              <div v-if="project.isPlaceholder" class="bg-gray-300 text-gray-500 px-4 py-2 rounded-lg text-sm font-medium cursor-not-allowed">
+              <div v-if="project.isPlaceholder" class="bg-gray-300 dark:bg-gray-600 text-gray-500 dark:text-gray-400 px-4 py-2 rounded-lg text-sm font-medium cursor-not-allowed">
                 {{ project.demoText }}
               </div>
               
@@ -233,7 +233,7 @@ const displayedProjects = computed((): Project[] => {
       <section 
         ref="paginationRef"
         v-if="totalPages > 1" 
-        class="bg-white rounded-2xl shadow-lg p-6 max-w-4xl w-full mb-12 component-card"
+        class="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-6 max-w-4xl w-full mb-12 component-card"
         style="box-shadow: 0 4px 24px rgba(139,90,140,0.08);"
       >
         <div class="flex justify-center items-center gap-2">
@@ -241,14 +241,14 @@ const displayedProjects = computed((): Project[] => {
           <NuxtLink 
             v-if="currentPage > 1"
             :to="`/projects?page=${currentPage - 1}`"
-            class="flex items-center gap-2 bg-gray-100 text-gray-700 px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 hover:bg-gray-200 hover:scale-105 no-underline"
+            class="flex items-center gap-2 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 hover:bg-gray-200 dark:hover:bg-gray-600 hover:scale-105 no-underline"
           >
             <i class="fas fa-chevron-left"></i>
             <span>上一页</span>
           </NuxtLink>
           <span 
             v-else
-            class="flex items-center gap-2 bg-gray-50 text-gray-400 px-4 py-2 rounded-lg text-sm font-medium cursor-not-allowed"
+            class="flex items-center gap-2 bg-gray-50 dark:bg-gray-800 text-gray-400 dark:text-gray-500 px-4 py-2 rounded-lg text-sm font-medium cursor-not-allowed"
           >
             <i class="fas fa-chevron-left"></i>
             <span>上一页</span>
@@ -266,7 +266,7 @@ const displayedProjects = computed((): Project[] => {
               <NuxtLink 
                 v-else
                 :to="`/projects?page=${pageNum}`"
-                class="bg-gray-100 text-gray-700 px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 hover:bg-gray-200 hover:scale-105 no-underline"
+                class="bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 hover:bg-gray-200 dark:hover:bg-gray-600 hover:scale-105 no-underline"
               >
                 {{ pageNum }}
               </NuxtLink>
@@ -277,14 +277,14 @@ const displayedProjects = computed((): Project[] => {
           <NuxtLink 
             v-if="currentPage < totalPages"
             :to="`/projects?page=${currentPage + 1}`"
-            class="flex items-center gap-2 bg-gray-100 text-gray-700 px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 hover:bg-gray-200 hover:scale-105 no-underline"
+            class="flex items-center gap-2 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 hover:bg-gray-200 dark:hover:bg-gray-600 hover:scale-105 no-underline"
           >
             <span>下一页</span>
             <i class="fas fa-chevron-right"></i>
           </NuxtLink>
           <span 
             v-else
-            class="flex items-center gap-2 bg-gray-50 text-gray-400 px-4 py-2 rounded-lg text-sm font-medium cursor-not-allowed"
+            class="flex items-center gap-2 bg-gray-50 dark:bg-gray-800 text-gray-400 dark:text-gray-500 px-4 py-2 rounded-lg text-sm font-medium cursor-not-allowed"
           >
             <span>下一页</span>
             <i class="fas fa-chevron-right"></i>
@@ -292,7 +292,7 @@ const displayedProjects = computed((): Project[] => {
         </div>
         
         <!-- 分页信息 -->
-        <div class="text-center mt-4 text-gray-500 text-sm">
+        <div class="text-center mt-4 text-gray-500 dark:text-gray-400 text-sm">
           第 {{ currentPage }} 页，共 {{ totalPages }} 页 · 共 {{ totalItems }} 个项目
         </div>
       </section>
@@ -310,20 +310,20 @@ const displayedProjects = computed((): Project[] => {
             class="text-2xl mb-2 block"
             :class="atBottom ? 'fas fa-arrow-down text-green-500' : 'fas fa-mouse text-primary'"
           ></i>
-          <p class="text-sm text-muted">
+          <p class="text-sm text-muted dark:text-gray-300">
             {{ atBottom ? '再向下滚动进入网站页' : '滚动到底部' }}
           </p>
         </div>
         
         <!-- 滚动进度条 -->
-        <div class="w-32 h-2 bg-gray-200 rounded-full overflow-hidden">
+        <div class="w-32 h-2 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden">
           <div 
             class="h-full transition-all duration-150 ease-out rounded-full"
             :class="atBottom ? 'bg-green-500' : 'bg-primary'"
             :style="{ width: scrollProgress + '%' }"
           ></div>
         </div>
-        <div class="text-xs text-muted mt-1">
+        <div class="text-xs text-muted dark:text-gray-300 mt-1">
           {{ Math.round(scrollProgress) }}% 
           <span v-if="atBottom" class="text-green-600 ml-1">✓ 已到底部</span>
         </div>

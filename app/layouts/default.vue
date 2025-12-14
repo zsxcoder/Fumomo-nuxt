@@ -215,7 +215,7 @@ onUnmounted(() => {
     </ClientOnly>
     
     <!-- 页面内容 -->
-    <div class="min-h-screen bg-gray-50 font-fumofumo overflow-x-hidden">
+    <div class="min-h-screen bg-gray-50 dark:bg-gray-900 font-fumofumo overflow-x-hidden">
       <slot />
     </div>
   </div>

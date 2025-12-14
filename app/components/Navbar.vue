@@ -253,6 +253,11 @@ onUnmounted(() => {
               </Transition>
             </li>
           </template>
+          
+          <!-- 桌面端主题切换按钮 -->
+          <li class="flex items-center">
+            <ThemeToggle />
+          </li>
         </ul>
       </div>
     </nav>
@@ -277,6 +282,11 @@ onUnmounted(() => {
         v-if="isMenuOpen"
         class="mobile-menu-container fixed top-16 right-4 w-56 bg-white/95 backdrop-blur-md shadow-lg border border-primary/10 rounded-xl z-50 py-3 px-3 md:hidden max-h-[calc(100vh-88px)] overflow-y-auto"
       >
+        <!-- 移动端主题切换 -->
+        <div class="flex justify-center py-2 mb-2 border-b border-primary/10">
+          <ThemeToggle />
+        </div>
+        
         <ul class="list-none m-0 p-0 flex flex-col gap-1">
           <template v-for="item in navigationWithChildren.slice(1)" :key="item.key">
             <!-- 无子菜单项 -->
@@ -344,6 +354,11 @@ onUnmounted(() => {
               </Transition>
             </li>
           </template>
+          
+          <!-- 桌面端主题切换按钮 -->
+          <li class="flex items-center">
+            <ThemeToggle />
+          </li>
         </ul>
       </div>
     </Transition>

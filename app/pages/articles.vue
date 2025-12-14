@@ -203,14 +203,14 @@ watch(() => route.query.page, (newPage, oldPage) => {
     <main class="flex flex-col items-center min-h-screen articles-page pt-24 relative">
       <section 
         ref="headerRef"
-        class="bg-white rounded-3xl shadow-lg p-12 max-w-4xl w-full flex flex-col mb-12"
+        class="bg-white dark:bg-gray-800 rounded-3xl shadow-lg p-12 max-w-4xl w-full flex flex-col mb-12"
         style="box-shadow: 0 4px 24px rgba(139,90,140,0.08);"
       >
         <h1 class="text-primary text-4xl mb-2 text-center font-fumofumo">{{ siteConfig.articles.pageTitle }}</h1>
-        <p class="text-muted text-xl text-center mb-8">{{ siteConfig.articles.pageDescription }}</p>
+        <p class="text-muted dark:text-gray-300 text-xl text-center mb-8">{{ siteConfig.articles.pageDescription }}</p>
         
         <!-- 文章来源说明与订阅地址 -->
-        <div class="bg-gradient-to-r from-pink-50 to-purple-50 rounded-xl p-4 mb-8 border border-pink-100">
+        <div class="bg-gradient-to-r from-pink-50 to-purple-50 dark:from-gray-700 dark:to-gray-800 rounded-xl p-4 mb-8 border border-pink-100 dark:border-gray-600">
           <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
             <div class="flex items-center gap-2">
               <span class="text-2xl"></span>
@@ -270,7 +270,7 @@ watch(() => route.query.page, (newPage, oldPage) => {
             <article 
               v-for="item in items" 
               :key="item.link"
-              class="article-card bg-gradient-to-br from-gray-50 to-pink-50 rounded-2xl border border-gray-200 transition-all duration-200 hover:-translate-y-1 overflow-hidden hover:shadow-lg"
+              class="article-card bg-gradient-to-br from-gray-50 to-pink-50 dark:from-gray-700 dark:to-gray-800 rounded-2xl border border-gray-200 dark:border-gray-600 transition-all duration-200 hover:-translate-y-1 overflow-hidden hover:shadow-lg"
             >
               <a 
                 :href="item.link" 
@@ -279,10 +279,10 @@ watch(() => route.query.page, (newPage, oldPage) => {
                 class="block p-6 no-underline text-inherit h-full relative"
               >
                 <h3 class="text-primary text-xl font-semibold mb-3 leading-snug font-fumofumo">{{ item.title }}</h3>
-                <p class="text-muted text-sm leading-relaxed mb-10 line-clamp-3 overflow-hidden">
+                <p class="text-muted dark:text-gray-300 text-sm leading-relaxed mb-10 line-clamp-3 overflow-hidden">
                   {{ item.description || '暂无简介' }}
                 </p>
-                <time class="absolute text-gray-400 text-xs font-normal bottom-4 right-6">
+                <time class="absolute text-gray-400 dark:text-gray-500 text-xs font-normal bottom-4 right-6">
                   {{ formatDate(item.pubDate) }}
                 </time>
               </a>
@@ -298,7 +298,7 @@ watch(() => route.query.page, (newPage, oldPage) => {
       <section 
         ref="paginationRef"
         v-if="totalPages > 1" 
-        class="bg-white rounded-2xl shadow-lg p-6 max-w-4xl w-full mb-12"
+        class="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-6 max-w-4xl w-full mb-12"
         style="box-shadow: 0 4px 24px rgba(139,90,140,0.08);"
       >
         <div class="flex justify-center items-center gap-2">
@@ -306,14 +306,14 @@ watch(() => route.query.page, (newPage, oldPage) => {
           <NuxtLink 
             v-if="currentPage > 1"
             :to="`/articles?page=${currentPage - 1}`"
-            class="flex items-center gap-2 bg-gray-100 text-gray-700 px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 hover:bg-gray-200 hover:scale-105 no-underline"
+            class="flex items-center gap-2 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 hover:bg-gray-200 dark:hover:bg-gray-600 hover:scale-105 no-underline"
           >
             <i class="fas fa-chevron-left"></i>
             <span>上一页</span>
           </NuxtLink>
           <span 
             v-else
-            class="flex items-center gap-2 bg-gray-50 text-gray-400 px-4 py-2 rounded-lg text-sm font-medium cursor-not-allowed"
+            class="flex items-center gap-2 bg-gray-50 dark:bg-gray-800 text-gray-400 dark:text-gray-500 px-4 py-2 rounded-lg text-sm font-medium cursor-not-allowed"
           >
             <i class="fas fa-chevron-left"></i>
             <span>上一页</span>
@@ -331,7 +331,7 @@ watch(() => route.query.page, (newPage, oldPage) => {
               <NuxtLink 
                 v-else
                 :to="`/articles?page=${pageNum}`"
-                class="bg-gray-100 text-gray-700 px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 hover:bg-gray-200 hover:scale-105 no-underline"
+                class="bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 hover:bg-gray-200 dark:hover:bg-gray-600 hover:scale-105 no-underline"
               >
                 {{ pageNum }}
               </NuxtLink>
@@ -342,14 +342,14 @@ watch(() => route.query.page, (newPage, oldPage) => {
           <NuxtLink 
             v-if="currentPage < totalPages"
             :to="`/articles?page=${currentPage + 1}`"
-            class="flex items-center gap-2 bg-gray-100 text-gray-700 px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 hover:bg-gray-200 hover:scale-105 no-underline"
+            class="flex items-center gap-2 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 hover:bg-gray-200 dark:hover:bg-gray-600 hover:scale-105 no-underline"
           >
             <span>下一页</span>
             <i class="fas fa-chevron-right"></i>
           </NuxtLink>
           <span 
             v-else
-            class="flex items-center gap-2 bg-gray-50 text-gray-400 px-4 py-2 rounded-lg text-sm font-medium cursor-not-allowed"
+            class="flex items-center gap-2 bg-gray-50 dark:bg-gray-800 text-gray-400 dark:text-gray-500 px-4 py-2 rounded-lg text-sm font-medium cursor-not-allowed"
           >
             <span>下一页</span>
             <i class="fas fa-chevron-right"></i>
@@ -357,7 +357,7 @@ watch(() => route.query.page, (newPage, oldPage) => {
         </div>
         
         <!-- 分页信息 -->
-        <div class="text-center mt-4 text-gray-500 text-sm">
+        <div class="text-center mt-4 text-gray-500 dark:text-gray-400 text-sm">
           第 {{ currentPage }} 页，共 {{ totalPages }} 页 · 共 {{ totalItems }} 篇文章
         </div>
       </section>
@@ -375,20 +375,20 @@ watch(() => route.query.page, (newPage, oldPage) => {
             class="text-2xl mb-2 block"
             :class="hasReachedBottom ? 'fas fa-arrow-down text-green-500' : 'fas fa-mouse text-primary'"
           ></i>
-          <p class="text-sm text-muted">
+          <p class="text-sm text-muted dark:text-gray-300">
             {{ hasReachedBottom ? '再向下滚动进入关于页' : '滚动到底部' }}
           </p>
         </div>
         
         <!-- 滚动进度条 -->
-        <div class="w-32 h-2 bg-gray-200 rounded-full overflow-hidden">
+        <div class="w-32 h-2 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden">
           <div 
             class="h-full transition-all duration-150 ease-out rounded-full"
             :class="hasReachedBottom ? 'bg-green-500' : 'bg-primary'"
             :style="{ width: scrollProgress + '%' }"
           ></div>
         </div>
-        <div class="text-xs text-muted mt-1">
+        <div class="text-xs text-muted dark:text-gray-300 mt-1">
           {{ Math.round(scrollProgress) }}% 
           <span v-if="hasReachedBottom" class="text-green-600 ml-1">✓ 已到底部</span>
         </div>

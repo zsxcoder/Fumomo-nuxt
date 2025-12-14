@@ -92,9 +92,9 @@ onUnmounted(() => {
     <main class="flex flex-col items-center min-h-screen about-page pt-24" :class="{ 'dispersed': showDisperse }">
       <div class="w-full max-w-5xl flex flex-col md:flex-row gap-8 items-stretch">
         <!-- 左侧：个人信息 -->
-        <section ref="personalInfoRef" class="bg-white rounded-3xl shadow-lg p-10 px-8 w-full md:w-1/2 flex flex-col items-center mb-12 component-card"
+        <section ref="personalInfoRef" class="bg-white dark:bg-gray-800 rounded-3xl shadow-lg p-10 px-8 w-full md:w-1/2 flex flex-col items-center mb-12 component-card"
                  style="box-shadow: 0 4px 24px rgba(139,90,140,0.08);">
-          <div class="w-24 h-24 rounded-full bg-gray-300 text-primary text-5xl flex items-center justify-center mb-6 font-bold select-none">
+          <div class="w-24 h-24 rounded-full bg-gray-300 dark:bg-gray-600 text-primary text-5xl flex items-center justify-center mb-6 font-bold select-none">
             <img 
               :src="siteConfig.personal.avatar" 
               :alt="siteConfig.personal.name" 
@@ -103,8 +103,8 @@ onUnmounted(() => {
           </div>
           <div class="text-center flex-1 flex flex-col justify-center">
             <h1 class="m-0 mb-2 text-3xl text-primary font-fumofumo">{{ siteConfig.personal.name }}</h1>
-            <p class="text-muted text-lg mb-5 text-center">{{ siteConfig.personal.bio }}</p>
-            <ul class="list-none p-0 m-0 text-base text-gray-700 space-y-3">
+            <p class="text-muted dark:text-gray-300 text-lg mb-5 text-center">{{ siteConfig.personal.bio }}</p>
+            <ul class="list-none p-0 m-0 text-base text-gray-700 dark:text-gray-300 space-y-3">
               <li>
                 <strong>社交链接：</strong>
                 <a 
@@ -113,7 +113,7 @@ onUnmounted(() => {
                   rel="noopener" 
                   class="text-primary no-underline transition-colors duration-200 hover:underline hover:text-purple-600"
                 >GitHub</a>
-                <span class="mx-2 text-gray-400">|</span>
+                <span class="mx-2 text-gray-400 dark:text-gray-500">|</span>
                 <a 
                   :href="`mailto:${siteConfig.personal.social.email}`" 
                   class="text-primary no-underline transition-colors duration-200 hover:underline hover:text-purple-600"
@@ -149,20 +149,20 @@ onUnmounted(() => {
             class="text-2xl mb-2 block"
             :class="atBottom ? 'fas fa-arrow-down text-green-500' : 'fas fa-mouse text-primary'"
           ></i>
-          <p class="text-sm text-muted">
+          <p class="text-sm text-muted dark:text-gray-300">
             {{ atBottom ? '再向下滚动进入友链页' : '滚动到底部' }}
           </p>
         </div>
         
         <!-- 滚动进度条 -->
-        <div class="w-32 h-2 bg-gray-200 rounded-full overflow-hidden">
+        <div class="w-32 h-2 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden">
           <div 
             class="h-full transition-all duration-150 ease-out rounded-full"
             :class="atBottom ? 'bg-green-500' : 'bg-primary'"
             :style="{ width: scrollProgress + '%' }"
           ></div>
         </div>
-        <div class="text-xs text-muted mt-1">
+        <div class="text-xs text-muted dark:text-gray-300 mt-1">
           {{ Math.round(scrollProgress) }}% 
           <span v-if="atBottom" class="text-green-600 ml-1">✓ 已到底部</span>
         </div>

@@ -8,15 +8,52 @@ export default {
     "./app.vue",
     "./error.vue"
   ],
+  darkMode: 'class',
   theme: {
     extend: {
       colors: {
         primary: {
           DEFAULT: '#8b5a8c',
           active: '#8b5a8c',
-          hover: '#7a4f7b'
+          hover: '#7a4f7b',
+          light: '#a974a9'  // 亮色模式下的变体
         },
-        muted: '#6b7280'
+        muted: {
+          DEFAULT: '#6b7280',
+          dark: '#9ca3af'
+        },
+        background: {
+          DEFAULT: '#ffffff',
+          dark: '#111827'
+        },
+        surface: {
+          DEFAULT: '#f9fafb',
+          dark: '#1f2937'
+        },
+        border: {
+          DEFAULT: '#e5e7eb',
+          dark: '#374151'
+        },
+        text: {
+          DEFAULT: '#333333',
+          dark: '#f3f4f6'
+        },
+        'text-2': {
+          DEFAULT: '#666666',
+          dark: '#d1d5db'
+        },
+        gray: {
+          50: '#f9fafb',
+          100: '#f3f4f6',
+          200: '#e5e7eb',
+          300: '#d1d5db',
+          400: '#9ca3af',
+          500: '#6b7280',
+          600: '#4b5563',
+          700: '#374151',
+          800: '#1f2937',
+          900: '#111827'
+        }
       },
       fontFamily: {
         fumofumo: [

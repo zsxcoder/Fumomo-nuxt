@@ -6,13 +6,24 @@ export default defineNuxtConfig({
   // 配置CSS
   css: [
     '@/assets/styles/global.css',
+    '@/assets/styles/dark.css',
     '@/assets/styles/giscus.css'
   ],
   
   // 配置modules
   modules: [
-    '@nuxtjs/tailwindcss'
+    '@nuxtjs/tailwindcss',
+    '@nuxtjs/color-mode'
   ],
+
+  // 颜色模式配置
+  colorMode: {
+    preference: 'system', // 默认跟随系统
+    fallbackValue: 'light', // 系统不支持时使用亮色模式
+    dataValue: 'theme', // 存储在 data-theme 属性中
+    classSuffix: '', // 不使用后缀
+    storageKey: 'color-mode', // 本地存储键名
+  },
 
   // 运行时配置
   runtimeConfig: {

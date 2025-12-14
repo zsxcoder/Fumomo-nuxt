@@ -113,7 +113,7 @@ const startScatterAnimation = () => {
     <!-- TODO: 需要创建Loading组件 -->
     
     <!-- 主要内容 -->
-    <main class="min-h-screen bg-gradient-to-br from-pink-50 via-blue-50 to-purple-50 p-8 relative" id="main-content">
+    <main class="min-h-screen bg-gradient-to-br from-pink-50 via-blue-50 to-purple-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 p-8 relative" id="main-content">
       <div class="max-w-screen-xl mx-auto text-center pt-36">
         <h1 
           ref="logoRef"
@@ -125,7 +125,7 @@ const startScatterAnimation = () => {
         
         <p 
           ref="subtitleRef"
-          class="text-2xl text-muted mb-12 opacity-0 subtitle"
+          class="text-2xl text-muted dark:text-gray-300 mb-12 opacity-0 subtitle"
           style="transform: translateY(2rem);"
         >
           {{ siteConfig.site.subtitle }}
@@ -139,11 +139,11 @@ const startScatterAnimation = () => {
           <div 
             v-for="(feature, index) in siteConfig.home.features" 
             :key="feature.title"
-            :class="`feature-card backdrop-blur-sm bg-white/70 rounded-3xl p-8 shadow-lg transition-all duration-300 hover:-translate-y-2 hover:scale-105`"
+            :class="`feature-card backdrop-blur-sm bg-white/70 dark:bg-gray-800/70 rounded-3xl p-8 shadow-lg transition-all duration-300 hover:-translate-y-2 hover:scale-105`"
             style="box-shadow: 0 8px 25px rgba(139, 90, 140, 0.15);"
           >
             <h2 class="text-2xl text-primary mb-4">{{ feature.title }}</h2>
-            <p class="text-muted leading-relaxed">{{ feature.description }}</p>
+            <p class="text-muted dark:text-gray-300 leading-relaxed">{{ feature.description }}</p>
           </div>
         </div>
       </div>
@@ -155,7 +155,7 @@ const startScatterAnimation = () => {
       >
         <div class="animate-bounce">
           <i class="fas fa-mouse text-2xl text-primary mb-2 block"></i>
-          <p class="text-sm text-muted">向下滚动进入文章页</p>
+          <p class="text-sm text-muted dark:text-gray-300">向下滚动进入文章页</p>
         </div>
       </div>
     </main>

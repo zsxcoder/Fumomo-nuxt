@@ -9,12 +9,42 @@ definePageMeta({
     title: pageConfig.title,
 });
 
+// 定义博主信息
+const myFeed = {
+    author: "钟神秀",
+    title: "ZSXの主页",
+    desc: "每一段旅程，都有终点~",
+    link: "https://blog.mcyzsx.top",
+    avatar: "https://cdn.jsdelivr.net/gh/zsxcoder/picx-images-hosting@master/avatar/zsxcoder.webp"
+}
+
+// 定义复制字段
+const copyFields = {
+    博主: myFeed.author,
+    标题: myFeed.title,
+    介绍: myFeed.desc,
+    网址: myFeed.link,
+    头像: myFeed.avatar,
+}
+
 // 分散动画相关
 const friendsSectionRef = ref(null);
 const paginationRef = ref(null);
 const showDisperse = ref(false);
 const scrollProgress = ref(0);
 const atBottom = ref(false);
+
+// 使用全局Toast函数
+const { $toast } = useNuxtApp();
+
+// Toast状态管理
+const toastMessage = ref('');
+
+// 导入Copy组件
+import Copy from "../components/Copy.vue";
+
+// 导入Toast组件
+import Toast from "../components/Toast.vue";
 
 // 检测是否为移动设备
 const isMobile = ref(false);
@@ -124,16 +154,52 @@ interface Friend {
 // 网站数据
 const friends: Friend[] = [
     {
-        title: "鈴奈咲桜のBlog",
-        description: "愛することを忘れないで",
-        avatar: "https://q2.qlogo.cn/headimg_dl?dst_uin=2731443459&spec=5",
-        url: "https://blog.sakura.ink",
+        title: "纸鹿摸鱼处",
+        description: "纸鹿至麓不知路，支炉制露不止漉",
+        avatar: "https://cdn.jsdelivr.net/gh/mcyzsx/picx-images-hosting@master/links/image.8ok4l9tqge.webp",
+        url: "https://blog.zhilu.site/",
     },
     {
-        title: "示例友链2",
-        description: "示例描述2",
-        avatar: "/favicon.ico",
-        url: "https://www.example2.com",
+        title: "ATao-Blog",
+        description: "做自己喜欢的事",
+        avatar: "https://cdn.atao.cyou/Web/Avatar.png",
+        url: "https://blog.atao.cyou",
+    },
+    {
+        title: "松坂日记",
+        description: "The world is big, you have to go and see",
+        avatar: "https://blog.mysqil.com/_astro/avatar.D239-k4C_ZU0B2r.webp",
+        url: "https://blog.mysqil.com",
+    },
+    {
+        title: "RyuChan",
+        description: "Ciallo～(∠・ω<)⌒★",
+        avatar: "https://hub.xiaozhangya.xin/profile.png",
+        url: "https://hub.xiaozhangya.xin",
+    },
+    {
+        title: "梦爱吃鱼",
+        description: "不负心灵，不负今生。",
+        avatar: "https://oss-cdn.bsgun.cn/logo/avatar.256.png",
+        url: "https://blog.bsgun.cn/",
+    },
+    {
+        title: "安知鱼",
+        description: "生活明朗，万物可爱",
+        avatar: "https://npm.elemecdn.com/anzhiyu-blog-static@1.0.4/img/avatar.jpg",
+        url: "https://blog.anheyu.com/",
+    },
+    {
+        title: "清羽飞扬",
+        description: "柳影曳曳，清酒孤灯，扬笔撒墨，心境如霜",
+        avatar: "https://blog.liushen.fun/info/avatar.ico",
+        url: "https://blog.liushen.fun/",
+    },
+    {
+        title: "Cynosura",
+        description: "Trying to light up the dark.",
+        avatar: "https://cynosura.one/img/avatar.webp",
+        url: "https://cynosura.one/",
     },
 ];
 
@@ -191,15 +257,78 @@ function resetForm() {
         avatar: "",
     };
 }
+
+// 显示提示消息
+function showToast(message: string) {
+    // 更新Toast消息
+    toastMessage.value = message;
+    
+    // 同时使用全局Toast函数作为备选
+    if ($toast) {
+        $toast(message);
+    }
+}
 </script>
 
 <template>
     <div>
+        <!-- Toast组件 -->
+        <Toast :message="toastMessage" />
+        
         <main class="flex flex-col items-center min-h-screen friends-page pt-24" :class="{ dispersed: showDisperse }">
+            <!-- 我的博客信息 -->
+            <div class="my-blog-section">
+                <div class="my-blog-card">
+                    <!-- 头像和基本信息 -->
+                    <div class="blog-header">
+                        <div class="avatar-wrapper">
+                            <img :src="myFeed.avatar" :alt="myFeed.author" class="blog-avatar">
+                            <span class="blog-owner-badge">博主</span>
+                        </div>
+                        <div class="blog-main-info">
+                            <h3 class="blog-name">{{ myFeed.author }}</h3>
+                            <p class="blog-subtitle">{{ myFeed.title }}</p>
+                        </div>
+                    </div>
+
+                    <!-- 博客描述 -->
+                    <div class="blog-content">
+                        <p class="blog-desc">{{ myFeed.desc }}</p>
+                    </div>
+
+                    <!-- 复制按钮 -->
+                    <div class="blog-actions">
+                        <div class="copy-buttons">
+                            <Copy v-for="(code, prompt) in copyFields" :key="prompt" :prompt="prompt" :code="code" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 滚动头像轮播图 -->
+            <div class="friends-avatar-carousel">
+                <div class="carousel-container">
+                    <div class="avatars-wrapper">
+                        <div v-for="friend in friends" :key="friend.title" class="avatar-item">
+                            <a :href="friend.url" target="_blank" class="avatar-link">
+                                <img :src="friend.avatar" :alt="friend.title" class="avatar-image">
+                                <div class="avatar-name">{{ friend.title }}</div>
+                            </a>
+                        </div>
+                        <!-- 复制一份实现无缝滚动 -->
+                        <div v-for="friend in friends" :key="friend.title + '-duplicate'" class="avatar-item">
+                            <a :href="friend.url" target="_blank" class="avatar-link">
+                                <img :src="friend.avatar" :alt="friend.title" class="avatar-image">
+                                <div class="avatar-name">{{ friend.title }}</div>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
             <section
                 ref="friendsSectionRef"
                 class="bg-white rounded-3xl shadow-lg p-12 max-w-4xl w-full mb-12 component-card"
-                style="box-shadow: 0 4px 24px rgba(139, 90, 140, 0.08)"
             >
                 <h1 class="text-primary text-4xl mb-2 text-center font-fumofumo">{{ pageConfig.title }}</h1>
                 <p v-if="'description' in pageConfig" class="text-muted text-xl text-center mb-8">
@@ -232,7 +361,6 @@ function resetForm() {
                 ref="paginationRef"
                 v-if="totalPages > 1"
                 class="bg-white rounded-2xl shadow-lg p-6 max-w-4xl w-full mb-12 component-card"
-                style="box-shadow: 0 4px 24px rgba(139, 90, 140, 0.08)"
             >
                 <div class="flex justify-center items-center gap-2">
                     <!-- 上一页按钮 -->
@@ -299,7 +427,6 @@ function resetForm() {
             <section
                 ref="applyButtonRef"
                 class="bg-white rounded-2xl shadow-lg p-6 max-w-4xl w-full mb-12 component-card flex justify-center items-center"
-                style="box-shadow: 0 4px 24px rgba(139, 90, 140, 0.08)"
             >
                 <div class="apply-section">
                     <button
@@ -379,8 +506,8 @@ function resetForm() {
                             </div>
 
                             <div class="form-actions">
-                                <button type="button" @click="showApplyForm = false" class="cancel-btn">取消</button>
-                                <button type="submit" class="submit-btn" :disabled="isSubmitting">
+                                <button type="button" @click="showApplyForm = false" class="styled-button cancel-btn">取消</button>
+                                <button type="submit" class="styled-button submit-btn" :disabled="isSubmitting">
                                     {{ isSubmitting ? "提交中..." : "提交申请" }}
                                 </button>
                             </div>
@@ -434,6 +561,7 @@ function resetForm() {
 
 .component-card {
     transition: all 1s ease-out;
+    box-shadow: 0 4px 24px rgba(139, 90, 140, 0.08);
 }
 
 /* 分散动画样式 */
@@ -457,9 +585,9 @@ function resetForm() {
     background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
     color: white;
     border: none;
-    padding: 1rem 2rem;
-    font-size: 1.1rem;
-    border-radius: 50px;
+    padding: 0.8rem 1.5rem;
+    font-size: 1rem;
+    border-radius: 8px;
     cursor: pointer;
     transition: all 0.3s ease;
     box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
@@ -479,15 +607,27 @@ function resetForm() {
 .styled-button.cancel-btn {
     background-color: #f1f5f9;
     color: #64748b;
+    box-shadow: 0 2px 8px rgba(100, 116, 139, 0.2);
 }
 
 .styled-button.cancel-btn:hover {
     background-color: #e2e8f0;
+    box-shadow: 0 4px 12px rgba(100, 116, 139, 0.3);
+}
+
+.styled-button.submit-btn {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
 }
 
 .styled-button.submit-btn:disabled {
     opacity: 0.7;
     cursor: not-allowed;
+    transform: none;
+}
+
+.styled-button.submit-btn:hover:not(:disabled) {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(102, 126, 234, 0.6);
 }
 
 /* 申请表单样式 */
@@ -621,6 +761,205 @@ function resetForm() {
     }
 }
 
+/* 我的博客信息样式 */
+.my-blog-section {
+    margin-top: 2rem;
+    max-width: 896px; /* 与轮播图一致 */
+    margin-left: auto;
+    margin-right: auto;
+    min-height: 180px; /* 设置最小高度，与轮播图容器相近 */
+}
+
+.my-blog-card {
+    background: var(--ld-bg-card, #f9fafb);
+    border: 1px solid var(--c-border, #e5e7eb);
+    border-radius: 16px;
+    padding: 2.5rem; /* 增加内边距，使内容更大 */
+    box-shadow: 0 4px 20px rgba(139, 90, 140, 0.08);
+    transition: all 0.3s ease;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    transform: translateY(0);
+    min-height: 180px; /* 确保卡片有足够的高度 */
+}
+
+.my-blog-card:hover {
+    transform: translateY(-5px);
+}
+
+.blog-header {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem; /* 增加间距 */
+    margin-bottom: 1.5rem; /* 增加底部边距 */
+}
+
+.avatar-wrapper {
+    position: relative;
+    flex-shrink: 0;
+}
+
+.blog-avatar {
+    width: 72px; /* 增大头像 */
+    height: 72px;
+    border-radius: 12px;
+    object-fit: cover;
+    border: 2px solid var(--c-border, #e5e7eb); /* 加粗边框 */
+    transition: transform 0.3s ease;
+}
+
+.blog-avatar:hover {
+    transform: scale(1.05);
+}
+
+.blog-owner-badge {
+    position: absolute;
+    top: -4px;
+    right: -4px;
+    background: var(--c-primary, #8b5a8c);
+    color: white;
+    padding: 4px 10px; /* 增加徽章大小 */
+    border-radius: 8px;
+    font-size: 0.7rem; /* 增大字体 */
+    font-weight: 600;
+    z-index: 5;
+    animation: pulse 2s infinite;
+}
+
+.blog-main-info {
+    flex: 1;
+}
+
+.blog-name {
+    font-size: 1.6rem; /* 增大字体 */
+    font-weight: 600;
+    margin: 0 0 0.5rem 0;
+    color: var(--c-text, #333);
+}
+
+.blog-subtitle {
+    font-size: 1.1rem; /* 增大字体 */
+    color: var(--c-text-2, #666);
+    margin: 0;
+    font-weight: 500;
+}
+
+.blog-content {
+    margin-bottom: 1.5rem; /* 增加底部边距 */
+    flex: 1;
+}
+
+.blog-desc {
+    font-size: 1.05rem; /* 增大字体 */
+    line-height: 1.6;
+    color: var(--c-text, #333);
+    margin: 0;
+    padding: 1rem; /* 增加内边距 */
+    background: rgba(139, 90, 140, 0.06);
+    border-radius: 10px;
+    border-left: 3px solid var(--c-primary, #8b5a8c);
+}
+
+.blog-actions {
+    margin-top: 2rem; /* 增加顶部边距 */
+}
+
+.copy-buttons {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.8rem; /* 增加按钮间距 */
+    justify-content: flex-start;
+}
+
+@keyframes pulse {
+    0% {
+        box-shadow: 0 0 0 0 rgba(139, 90, 140, 0.7);
+    }
+    70% {
+        box-shadow: 0 0 0 10px rgba(139, 90, 140, 0);
+    }
+    100% {
+        box-shadow: 0 0 0 0 rgba(139, 90, 140, 0);
+    }
+}
+
+/* 滚动头像轮播图样式 */
+.friends-avatar-carousel {
+    margin: 2rem 0;
+    max-width: 896px; /* 与max-w-4xl一致 */
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.carousel-container {
+    position: relative;
+    overflow: hidden;
+    border-radius: 12px;
+    background: var(--ld-bg-card, #f9fafb);
+    border: 1px solid var(--c-border, #e5e7eb);
+    box-shadow: 0 4px 20px rgba(139, 90, 140, 0.08);
+    padding: 1rem;
+}
+
+.avatars-wrapper {
+    display: flex;
+    animation: scroll-left 30s linear infinite;
+}
+
+.avatar-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin: 0 1rem;
+    min-width: 100px;
+    transition: transform 0.3s ease;
+}
+
+.avatar-item:hover {
+    transform: translateY(-5px);
+}
+
+.avatar-link {
+    text-decoration: none;
+}
+
+.avatar-image {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid var(--c-primary, #8b5a8c);
+    margin-bottom: 0.5rem;
+    transition: transform 0.3s ease;
+}
+
+.avatar-image:hover {
+    transform: scale(1.1);
+}
+
+.avatar-name {
+    font-size: 0.85rem;
+    color: var(--c-text, #333);
+    text-align: center;
+    font-weight: 500;
+}
+
+@keyframes scroll-left {
+    0% {
+        transform: translateX(0);
+    }
+    100% {
+        transform: translateX(-50%);
+    }
+}
+
+/* 暂停动画当鼠标悬停在轮播图上 */
+.carousel-container:hover .avatars-wrapper {
+    animation-play-state: paused;
+}
+
 /* 移动端适配 */
 @media (max-width: 768px) {
     .apply-form {
@@ -635,6 +974,59 @@ function resetForm() {
     .styled-button {
         width: 100%;
         padding: 1rem;
+    }
+    
+    .avatar-item {
+        min-width: 80px;
+        margin: 0 0.5rem;
+    }
+    
+    .avatar-item img {
+        width: 50px;
+        height: 50px;
+    }
+    
+    .avatar-item div {
+        font-size: 0.75rem;
+    }
+    
+    /* 博客信息卡片移动端适配 */
+    .my-blog-section {
+        aspect-ratio: unset; /* 移动端不使用固定比例 */
+        margin: 1rem;
+        min-height: auto; /* 移动端不使用最小高度 */
+    }
+    
+    .my-blog-card {
+        padding: 1.5rem;
+        min-height: auto;
+    }
+    
+    .blog-header {
+        margin-bottom: 1rem;
+        gap: 1rem;
+    }
+    
+    .blog-avatar {
+        width: 56px;
+        height: 56px;
+    }
+    
+    .blog-name {
+        font-size: 1.3rem;
+    }
+    
+    .blog-subtitle {
+        font-size: 1rem;
+    }
+    
+    .blog-desc {
+        font-size: 0.9rem;
+        padding: 0.8rem;
+    }
+    
+    .copy-buttons {
+        gap: 0.6rem;
     }
 }
 </style>

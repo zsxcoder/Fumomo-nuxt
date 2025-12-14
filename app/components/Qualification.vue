@@ -197,16 +197,16 @@ const awards: Award[] = [
     </div>
 
     <!-- 技能专长 -->
-    <div v-if="siteConfig.qualificationSections.skills" class="mb-8">
+      <div v-if="siteConfig.qualificationSections.skills" class="mb-8">
       <h3 class="text-xl font-semibold text-primary mb-4 flex items-center">
         <i class="fas fa-code mr-2"></i>
         技能专长
       </h3>
       <div class="grid grid-cols-3 md:grid-cols-6 lg:grid-cols-8 gap-4">
         <div v-for="icon in techIcons" :key="icon.name"
-             class="flex flex-col items-center justify-center bg-gray-50 rounded-lg p-3 hover:bg-gray-100 transition-colors group">
+             class="flex flex-col items-center justify-center bg-gray-50 dark:bg-gray-700 rounded-lg p-3 hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors group">
           <component :is="icon.component" class="w-12 h-12 mb-2" />
-          <span class="text-xs text-gray-600 text-center">{{ icon.name }}</span>
+          <span class="text-xs text-gray-600 dark:text-gray-300 text-center">{{ icon.name }}</span>
         </div>
       </div>
     </div>
@@ -215,20 +215,20 @@ const awards: Award[] = [
     <div v-if="siteConfig.qualificationSections.education" class="mb-8">
       <h3 class="text-xl font-semibold text-primary mb-4 flex items-center">
         <i class="fas fa-code mr-2"></i>
-          教育背景
-        </h3>
-        <div class="space-y-4">
-          <div v-for="edu in education" :key="edu.title" 
-               class="bg-gradient-to-r from-pink-50 to-purple-50 rounded-lg p-4">
-            <div class="flex justify-between items-start mb-2">
-              <h4 class="font-semibold text-gray-800">{{ edu.title }}</h4>
-              <span class="text-sm text-gray-500">{{ edu.period }}</span>
-            </div>
-            <p class="text-gray-600 text-sm">{{ edu.school }}</p>
-            <p class="text-gray-600 text-sm mt-1">{{ edu.courses }}</p>
+        教育背景
+      </h3>
+      <div class="space-y-4">
+        <div v-for="edu in education" :key="edu.title" 
+               class="bg-gradient-to-r from-pink-50 to-purple-50 dark:from-gray-700 dark:to-purple-900 rounded-lg p-4">
+          <div class="flex justify-between items-start mb-2">
+            <h4 class="font-semibold text-gray-800 dark:text-gray-200">{{ edu.title }}</h4>
+            <span class="text-sm text-gray-500 dark:text-gray-400">{{ edu.period }}</span>
           </div>
+          <p class="text-gray-600 dark:text-gray-300 text-sm">{{ edu.school }}</p>
+          <p class="text-gray-600 dark:text-gray-300 text-sm mt-1">{{ edu.courses }}</p>
         </div>
       </div>
+    </div>
 
 
 
