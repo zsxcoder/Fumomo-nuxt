@@ -399,6 +399,20 @@ onUnmounted(() => {
   display: block;
 }
 
+/* 下拉菜单深色模式适配 */
+.dark .dropdown-menu {
+  background-color: rgba(31, 41, 55, 0.95);
+  border-color: rgba(139, 90, 140, 0.3);
+}
+
+.dark #nav-menu ul li::before {
+  background: linear-gradient(90deg, rgba(139, 90, 140, 0.1) 0%, rgba(55, 65, 81, 0.3) 100%);
+}
+
+.dark #nav-menu ul li:hover::before {
+  width: 100%;
+}
+
 /* 移动端菜单项样式 */
 @media (max-width: 768px) {
   .mobile-menu .nav-link {
@@ -559,5 +573,30 @@ onUnmounted(() => {
     align-items: center;
     justify-content: center;
   }
+}
+
+/* 移动端菜单深色模式适配 */
+.dark .mobile-menu-container {
+  background-color: rgba(31, 41, 55, 0.95);
+  border-color: rgba(139, 90, 140, 0.3);
+}
+
+.dark .mobile-menu-container .border-b {
+  border-color: rgba(139, 90, 140, 0.2) !important;
+}
+
+/* 移动端子菜单深色模式 */
+.dark .mobile-menu-container ul li a {
+  color: #d1d5db;
+}
+
+.dark .mobile-menu-container ul li a:hover {
+  background-color: rgba(139, 90, 140, 0.2);
+  color: #a974a9;
+}
+
+.dark .mobile-menu-container ul li a.bg-primary\/10 {
+  background-color: rgba(139, 90, 140, 0.2) !important;
+  color: #a974a9 !important;
 }
 </style>

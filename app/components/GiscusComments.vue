@@ -32,21 +32,27 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, onUnmounted, watch, nextTick } from 'vue'
+import { ref, onMounted, onUnmounted, watch, nextTick, computed } from 'vue'
 
 interface Props {
   essayId: string
   essayContent?: string
   commentCount?: number
+  defaultShow?: boolean
 }
 
 const props = withDefaults(defineProps<Props>(), {
   essayContent: '',
-  commentCount: 0
+  commentCount: 0,
+  defaultShow: false
 })
 
-const showComments = ref(false)
+const colorMode = useColorMode()
+const showComments = ref(props.defaultShow)
 const giscusContainer = ref<HTMLElement>()
+
+// 计算当前主题
+const isDark = computed(() => colorMode.value === 'dark')
 
 // 切换评论显示状态
 const toggleComments = () => {
@@ -119,8 +125,7 @@ const loadGiscus = () => {
     script.setAttribute('data-emit-metadata', '0')
     script.setAttribute('data-input-position', 'top')
     // 根据当前主题设置Giscus主题
-    const isDarkMode = document.documentElement.classList.contains('dark')
-    script.setAttribute('data-theme', isDarkMode ? 'dark_dimmed' : 'light')
+    script.setAttribute('data-theme', isDark.value ? 'dark_dimmed' : 'light')
     script.setAttribute('data-lang', 'zh-CN')
     script.setAttribute('data-loading', 'lazy')
     script.setAttribute('crossorigin', 'anonymous')
@@ -165,32 +170,51 @@ onUnmounted(() => {
 let mediaQuery: MediaQueryList | null = null
 let updateTheme: ((e: MediaQueryListEvent | MediaQueryList) => void) | null = null
 
-// 初始化时如果评论区域是打开状态，则加载
-onMounted(() => {
-  if (showComments.value) {
+// 更新Giscus主题的函数
+const updateGiscusTheme = () => {
+  const giscusIframe = document.querySelector('.giscus-frame') as HTMLIFrameElement
+  if (giscusIframe && giscusIframe.contentWindow) {
+    // 发送消息更新主题
+    giscusIframe.contentWindow.postMessage({
+      giscus: {
+        setConfig: {
+          theme: isDark.value ? 'dark_dimmed' : 'light'
+        }
+      }
+    }, 'https://giscus.app')
+  }
+}
+
+// 监听主题变化
+watch(isDark, () => {
+  if (showComments.value && import.meta.client) {
     nextTick(() => {
-      loadGiscus()
+      updateGiscusTheme()
     })
   }
-  
-  // 监听系统主题变化，更新Giscus主题
+})
+
+// 初始化时如果评论区域是打开状态，则加载
+onMounted(() => {
+  // 无论默认状态如何，都需要设置主题监听器
   if (import.meta.client) {
     mediaQuery = window.matchMedia('(prefers-color-scheme: dark)')
     updateTheme = (e: MediaQueryListEvent | MediaQueryList) => {
-      const giscusIframe = document.querySelector('.giscus-frame') as HTMLIFrameElement
-      if (giscusIframe && giscusIframe.contentWindow) {
-        // 发送消息更新主题
-        giscusIframe.contentWindow.postMessage({
-          giscus: {
-            setConfig: {
-              theme: e.matches ? 'dark' : 'light'
-            }
-          }
-        }, 'https://giscus.app')
+      // 这个监听器用于系统主题变化，但我们已经通过 colorMode 处理了
+      // 保留作为后备方案
+      if (!colorMode || colorMode.preference === 'system') {
+        updateGiscusTheme()
       }
     }
     
     mediaQuery.addEventListener('change', updateTheme)
+    
+    // 如果默认展开，立即加载评论
+    if (showComments.value) {
+      nextTick(() => {
+        loadGiscus()
+      })
+    }
   }
 })
 </script>
@@ -360,11 +384,9 @@ onMounted(() => {
   box-shadow: 0 4px 16px rgba(139, 90, 140, 0.1);
   border: 1px solid rgba(139, 90, 140, 0.15);
   font-family: 'Comic Sans MS', 'XiaokeNailao', cursive, sans-serif;
-}
-
-:deep(.giscus-frame) {
   background: rgba(255, 255, 255, 0.9);
   backdrop-filter: blur(8px);
+  transition: background-color 0.3s ease, border-color 0.3s ease;
 }
 
 .dark :deep(.giscus-frame) {

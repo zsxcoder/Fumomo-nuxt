@@ -113,6 +113,10 @@ export const siteConfig = {
             title: "赞助支持",
             description: "感谢您的支持，让这个网站能够持续发展",
         },
+        guestbook: {
+            title: "留言板",
+            description: "在这里留下你的想法和建议",
+        },
         website: {
             title: "我的网站",
             description: "正在运行的网站信息",
@@ -201,6 +205,7 @@ export const siteConfig = {
             //     { name: "全部项目", href: "/projects", key: "projects-all" }
             // ]
         },
+        { name: "留言板", href: "/guestbook", key: "guestbook" },
         { name: "网站", href: "/website", key: "website" },
     ],
 
