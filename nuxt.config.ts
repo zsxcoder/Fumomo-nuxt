@@ -5,7 +5,8 @@ export default defineNuxtConfig({
   
   // 配置CSS
   css: [
-    '@/assets/styles/global.css'
+    '@/assets/styles/global.css',
+    '@/assets/styles/giscus.css'
   ],
   
   // 配置modules
