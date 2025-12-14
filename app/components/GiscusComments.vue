@@ -153,7 +153,16 @@ onUnmounted(() => {
   if (giscusContainer.value) {
     giscusContainer.value.innerHTML = ''
   }
+  
+  // 清理媒体查询监听器
+  if (import.meta.client && mediaQuery && updateTheme) {
+    mediaQuery.removeEventListener('change', updateTheme)
+  }
 })
+
+// 监听媒体查询变化
+let mediaQuery: MediaQueryList | null = null
+let updateTheme: ((e: MediaQueryListEvent | MediaQueryList) => void) | null = null
 
 // 初始化时如果评论区域是打开状态，则加载
 onMounted(() => {
@@ -165,8 +174,8 @@ onMounted(() => {
   
   // 监听系统主题变化，更新Giscus主题
   if (import.meta.client) {
-    const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)')
-    const updateTheme = (e: MediaQueryListEvent | MediaQueryList) => {
+    mediaQuery = window.matchMedia('(prefers-color-scheme: dark)')
+    updateTheme = (e: MediaQueryListEvent | MediaQueryList) => {
       const giscusIframe = document.querySelector('.giscus-frame') as HTMLIFrameElement
       if (giscusIframe && giscusIframe.contentWindow) {
         // 发送消息更新主题
@@ -181,11 +190,6 @@ onMounted(() => {
     }
     
     mediaQuery.addEventListener('change', updateTheme)
-    
-    // 清理函数
-    onUnmounted(() => {
-      mediaQuery.removeEventListener('change', updateTheme)
-    })
   }
 })
 </script>
