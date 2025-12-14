@@ -1,0 +1,130 @@
+/* Giscus 评论系统自定义样式，适配博客主题 */
+
+/* 根节点变量 */
+:root {
+  --giscus-primary-color: #8b5a8c;
+  --giscus-background-color: rgba(255, 255, 255, 0.95);
+  --giscus-input-bg: rgba(255, 255, 255, 0.8);
+  --giscus-border-color: rgba(139, 90, 140, 0.2);
+  --giscus-text-color: #666;
+  --giscus-font-family: 'Comic Sans MS', 'XiaokeNailao', cursive, sans-serif;
+}
+
+/* 深色模式变量 */
+html.dark {
+  --giscus-primary-color: #c291cc;
+  --giscus-background-color: rgba(17, 24, 39, 0.95);
+  --giscus-input-bg: rgba(17, 24, 39, 0.8);
+  --giscus-border-color: rgba(139, 90, 140, 0.3);
+  --giscus-text-color: #d1d5db;
+}
+
+/* Giscus 容器样式 */
+.giscus {
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 4px 24px rgba(139, 90, 140, 0.08);
+  backdrop-filter: blur(10px);
+  background-color: var(--giscus-background-color);
+  border: 1px solid var(--giscus-border-color);
+  font-family: var(--giscus-font-family);
+}
+
+/* 评论区容器 */
+.giscus-frame {
+  border-radius: 12px;
+  overflow: hidden;
+  background-color: var(--giscus-background-color);
+}
+
+/* 输入框样式 */
+.giscus-input {
+  background-color: var(--giscus-input-bg) !important;
+  border: 1px solid var(--giscus-border-color) !important;
+  border-radius: 8px !important;
+  font-family: var(--giscus-font-family) !important;
+  color: var(--giscus-text-color) !important;
+}
+
+.giscus-input:focus {
+  border-color: var(--giscus-primary-color) !important;
+  box-shadow: 0 0 0 3px rgba(139, 90, 140, 0.1) !important;
+}
+
+/* 按钮样式 */
+.giscus-button {
+  background-color: var(--giscus-primary-color) !important;
+  color: white !important;
+  border-radius: 8px !important;
+  font-weight: 500 !important;
+  font-family: var(--giscus-font-family) !important;
+  transition: all 0.2s ease !important;
+}
+
+.giscus-button:hover {
+  background-color: #7a4878 !important;
+  transform: translateY(-1px) !important;
+}
+
+/* 链接样式 */
+.giscus-link {
+  color: var(--giscus-primary-color) !important;
+  text-decoration: none !important;
+  font-weight: 500 !important;
+  transition: color 0.2s ease !important;
+}
+
+.giscus-link:hover {
+  color: #7a4878 !important;
+  text-decoration: underline !important;
+}
+
+/* 评论卡片样式 */
+.giscus-comment {
+  border-radius: 8px !important;
+  background-color: var(--giscus-background-color) !important;
+  border: 1px solid var(--giscus-border-color) !important;
+  margin-bottom: 12px !important;
+  transition: background-color 0.2s ease !important;
+}
+
+.giscus-comment:hover {
+  background-color: rgba(139, 90, 140, 0.05) !important;
+}
+
+/* 用户头像样式 */
+.giscus-avatar {
+  border-radius: 50% !important;
+  border: 2px solid var(--giscus-primary-color) !important;
+}
+
+/* 反应按钮样式 */
+.giscus-reaction {
+  border-radius: 20px !important;
+  background-color: var(--giscus-input-bg) !important;
+  border: 1px solid var(--giscus-border-color) !important;
+  color: var(--giscus-text-color) !important;
+  font-family: var(--giscus-font-family) !important;
+}
+
+.giscus-reaction:hover {
+  background-color: rgba(139, 90, 140, 0.05) !important;
+}
+
+.giscus-reaction.selected {
+  background-color: var(--giscus-primary-color) !important;
+  color: white !important;
+}
+
+/* 时间戳样式 */
+.giscus-timestamp {
+  color: var(--giscus-text-color) !important;
+  font-size: 0.85rem !important;
+  font-family: monospace !important;
+}
+
+/* 加载中样式 */
+.giscus-loading {
+  border-color: var(--giscus-primary-color) !important;
+  border-right-color: transparent !important;
+}

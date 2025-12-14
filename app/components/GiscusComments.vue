@@ -53,29 +53,77 @@ const toggleComments = () => {
   showComments.value = !showComments.value
 }
 
+// 加载自定义Giscus样式
+const loadGiscusStyles = () => {
+  if (import.meta.client) {
+    // 检查是否已添加样式
+    if (document.getElementById('custom-giscus-styles')) return
+    
+    const style = document.createElement('style')
+    style.id = 'custom-giscus-styles'
+    style.textContent = `
+      /* 自定义Giscus样式以匹配博客主题 */
+      :root {
+        --giscus-primary-color: #8b5a8c;
+        --giscus-background-color: rgba(255, 255, 255, 0.95);
+        --giscus-input-bg: rgba(255, 255, 255, 0.8);
+        --giscus-border-color: rgba(139, 90, 140, 0.2);
+        --giscus-text-color: #666;
+        --giscus-font-family: 'Comic Sans MS', 'XiaokeNailao', cursive, sans-serif;
+      }
+      
+      html.dark {
+        --giscus-primary-color: #c291cc;
+        --giscus-background-color: rgba(17, 24, 39, 0.95);
+        --giscus-input-bg: rgba(17, 24, 39, 0.8);
+        --giscus-border-color: rgba(139, 90, 140, 0.3);
+        --giscus-text-color: #d1d5db;
+      }
+      
+      /* Giscus 基础样式 */
+      .giscus {
+        border-radius: 12px;
+        overflow: hidden;
+        box-shadow: 0 4px 24px rgba(139, 90, 140, 0.08);
+        backdrop-filter: blur(10px);
+        background-color: var(--giscus-background-color);
+        border: 1px solid var(--giscus-border-color);
+        font-family: var(--giscus-font-family);
+      }
+    `
+    
+    document.head.appendChild(style)
+  }
+}
+
 // 加载Giscus脚本
 const loadGiscus = () => {
   if (import.meta.client && giscusContainer.value) {
     // 清空容器
     giscusContainer.value.innerHTML = ''
     
+    // 加载自定义样式
+    loadGiscusStyles()
+    
     // 创建Giscus脚本元素
-    const script = document.createElement('script')
-    script.src = 'https://giscus.app/client.js'
-    script.setAttribute('data-repo', 'zsxcoder/giscus-comments')
-    script.setAttribute('data-repo-id', 'R_kgDOQoZP0g')
-    script.setAttribute('data-category', 'home')
-    script.setAttribute('data-category-id', 'DIC_kwDOQoZP0s4Czw_Z')
-    script.setAttribute('data-mapping', 'pathname')
-    script.setAttribute('data-strict', '1')
-    script.setAttribute('data-reactions-enabled', '1')
-    script.setAttribute('data-emit-metadata', '0')
-    script.setAttribute('data-input-position', 'top')
-    script.setAttribute('data-theme', 'preferred_color_scheme')
-    script.setAttribute('data-lang', 'zh-CN')
-    script.setAttribute('data-loading', 'lazy')
-    script.setAttribute('crossorigin', 'anonymous')
-    script.async = true
+        const script = document.createElement('script')
+        script.src = 'https://giscus.app/client.js'
+        script.setAttribute('data-repo', 'zsxcoder/giscus-comments')
+        script.setAttribute('data-repo-id', 'R_kgDOQoZP0g')
+        script.setAttribute('data-category', 'home')
+        script.setAttribute('data-category-id', 'DIC_kwDOQoZP0s4Czw_Z')
+        script.setAttribute('data-mapping', 'pathname')
+        script.setAttribute('data-strict', '1')
+        script.setAttribute('data-reactions-enabled', '1')
+        script.setAttribute('data-emit-metadata', '0')
+        script.setAttribute('data-input-position', 'top')
+        // 根据当前主题设置Giscus主题
+        const isDarkMode = document.documentElement.classList.contains('dark')
+        script.setAttribute('data-theme', isDarkMode ? 'dark' : 'light')
+        script.setAttribute('data-lang', 'zh-CN')
+        script.setAttribute('data-loading', 'lazy')
+        script.setAttribute('crossorigin', 'anonymous')
+        script.async = true
     
     // 添加到容器
     giscusContainer.value.appendChild(script)
@@ -112,6 +160,31 @@ onMounted(() => {
   if (showComments.value) {
     nextTick(() => {
       loadGiscus()
+    })
+  }
+  
+  // 监听系统主题变化，更新Giscus主题
+  if (import.meta.client) {
+    const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)')
+    const updateTheme = (e: MediaQueryListEvent | MediaQueryList) => {
+      const giscusIframe = document.querySelector('.giscus-frame') as HTMLIFrameElement
+      if (giscusIframe && giscusIframe.contentWindow) {
+        // 发送消息更新主题
+        giscusIframe.contentWindow.postMessage({
+          giscus: {
+            setConfig: {
+              theme: e.matches ? 'dark' : 'light'
+            }
+          }
+        }, 'https://giscus.app')
+      }
+    }
+    
+    mediaQuery.addEventListener('change', updateTheme)
+    
+    // 清理函数
+    onUnmounted(() => {
+      mediaQuery.removeEventListener('change', updateTheme)
     })
   }
 })
@@ -211,5 +284,131 @@ onMounted(() => {
 
 .giscus {
   min-height: 200px;
+  --color-primary: #8b5a8c;
+  --color-secondary: #f0f9ff;
+  --color-accent: #ffeef8;
+  --color-text: #666;
+  --color-bg-main: rgba(255, 255, 255, 0.95);
+  --color-bg-input: rgba(255, 255, 255, 0.8);
+  --color-bg-hover: rgba(139, 90, 140, 0.05);
+  --color-border: rgba(139, 90, 140, 0.2);
+  --font-family: 'Comic Sans MS', 'XiaokeNailao', cursive, sans-serif;
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.dark .giscus {
+  --color-primary: #c291cc;
+  --color-secondary: #1e293b;
+  --color-accent: #2d1b3f;
+  --color-text: #d1d5db;
+  --color-bg-main: rgba(17, 24, 39, 0.95);
+  --color-bg-input: rgba(17, 24, 39, 0.8);
+  --color-bg-hover: rgba(139, 90, 140, 0.1);
+  --color-border: rgba(139, 90, 140, 0.3);
+}
+
+/* 深度选择器，用于修改Giscus内部样式 */
+:deep(.giscus-frame) {
+  border-radius: 12px;
+  box-shadow: 0 4px 24px rgba(139, 90, 140, 0.08);
+  border: 1px solid var(--color-border);
+  overflow: hidden;
+  background-color: var(--color-bg-main);
+  backdrop-filter: blur(10px);
+  font-family: var(--font-family);
+}
+
+/* 评论输入框样式 */
+:deep(.giscus-frame input),
+:deep(.giscus-frame textarea) {
+  background-color: var(--color-bg-input);
+  border-radius: 8px;
+  border: 1px solid var(--color-border);
+  font-family: var(--font-family);
+  transition: all 0.2s ease;
+}
+
+:deep(.giscus-frame input:focus),
+:deep(.giscus-frame textarea:focus) {
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px rgba(139, 90, 140, 0.1);
+}
+
+/* 按钮样式 */
+:deep(.giscus-frame button) {
+  background-color: var(--color-primary);
+  color: white;
+  border-radius: 8px;
+  font-weight: 500;
+  font-family: var(--font-family);
+  transition: all 0.2s ease;
+}
+
+:deep(.giscus-frame button:hover) {
+  background-color: #7a4878;
+  transform: translateY(-1px);
+}
+
+/* 链接样式 */
+:deep(.giscus-frame a) {
+  color: var(--color-primary);
+  text-decoration: none;
+  font-weight: 500;
+  transition: color 0.2s ease;
+}
+
+:deep(.giscus-frame a:hover) {
+  color: #7a4878;
+  text-decoration: underline;
+}
+
+/* 评论卡片样式 */
+:deep(.giscus-frame .comment) {
+  border-radius: 8px;
+  background-color: var(--color-bg-main);
+  border: 1px solid var(--color-border);
+  margin-bottom: 12px;
+}
+
+:deep(.giscus-frame .comment:hover) {
+  background-color: var(--color-bg-hover);
+}
+
+/* 用户头像样式 */
+:deep(.giscus-frame .avatar) {
+  border-radius: 50%;
+  border: 2px solid var(--color-primary);
+}
+
+/* 标签样式 */
+:deep(.giscus-frame .reaction-button) {
+  border-radius: 20px;
+  background-color: var(--color-bg-input);
+  border: 1px solid var(--color-border);
+  color: var(--color-text);
+  font-family: var(--font-family);
+}
+
+:deep(.giscus-frame .reaction-button:hover) {
+  background-color: var(--color-bg-hover);
+}
+
+:deep(.giscus-frame .reaction-button.selected) {
+  background-color: var(--color-primary);
+  color: white;
+}
+
+/* 时间戳样式 */
+:deep(.giscus-frame .timestamp) {
+  color: var(--color-text);
+  font-size: 0.85rem;
+  font-family: monospace;
+}
+
+/* 加载中样式 */
+:deep(.giscus-frame .loading-spinner) {
+  border-color: var(--color-primary);
+  border-right-color: transparent;
 }
 </style>
