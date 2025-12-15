@@ -253,6 +253,11 @@ onUnmounted(() => {
               </Transition>
             </li>
           </template>
+          
+          <!-- 桌面端主题切换 -->
+          <li class="relative">
+            <ThemeToggle />
+          </li>
         </ul>
       </div>
     </nav>

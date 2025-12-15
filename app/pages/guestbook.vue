@@ -227,7 +227,20 @@ const currentPage = 'guestbook'
 }
 
 .giscus-container {
-  margin-top: 1rem;
+    margin-top: 1rem;
+    background: rgba(249, 250, 251, 0.8);
+    backdrop-filter: blur(8px);
+    border-radius: 12px;
+    overflow: hidden;
+    border: 1px solid rgba(139, 90, 140, 0.1);
+    box-shadow: 0 2px 12px rgba(139, 90, 140, 0.05);
+    transition: all 0.3s ease; /* 添加过渡动画 */
+}
+
+.dark .giscus-container {
+    background: rgba(31, 41, 55, 0.8) !important; /* 深色模式下的背景 */
+    border-color: rgba(139, 90, 140, 0.2) !important; /* 深色模式下的边框颜色 */
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.2) !important; /* 深色模式下的阴影效果 */
 }
 
 /* 响应式调整 */

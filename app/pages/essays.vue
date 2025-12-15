@@ -1154,11 +1154,13 @@ function getEssaySummary(item: any): string {
     border-radius: 12px;
     padding: 0.5rem;
     border: 1px solid rgba(139, 90, 140, 0.1);
+    transition: background-color 0.3s ease, border-color 0.3s ease;
 }
 
 .dark .essay-comments {
-    background: rgba(31, 41, 55, 0.5);
-    border-color: rgba(194, 145, 204, 0.2);
+    background: rgba(31, 41, 55, 0.5) !important;
+    border-color: rgba(194, 145, 204, 0.2) !important;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 }
 
 .essay-tags {
