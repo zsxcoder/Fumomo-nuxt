@@ -254,8 +254,8 @@ onUnmounted(() => {
             </li>
           </template>
           
-          <!-- 桌面端主题切换 -->
-          <li class="relative">
+          <!-- 桌面端主题切换按钮 -->
+          <li class="relative flex items-center">
             <ThemeToggle />
           </li>
         </ul>

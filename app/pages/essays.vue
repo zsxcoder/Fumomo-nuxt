@@ -133,11 +133,9 @@ const handleWheel = (event: WheelEvent) => {
         showDisperse.value = true;
 
         // 延迟导航到友链页面
-        if (import.meta.client) {
-            setTimeout(() => {
-                navigateTo("/friends");
-            }, 1000);
-        }
+        setTimeout(() => {
+            navigateTo("/friends");
+        }, 1000);
     }
 };
 
@@ -399,56 +397,42 @@ function getEssaySummary(item: any): string {
         : textContent;
 }
 
-// 当前被引用的随笔
-const quotedEssay = ref<{
-  index: number;
-  content: string;
-} | null>(null);
+// 管理当前被引用的随笔
+const referencedEssay = ref<{
+    index: number;
+    content: string;
+  } | null>(null);
 
-// 管理评论显示状态
-const commentVisibility = ref<Record<number, boolean>>({})
-
-// 管理评论计数
-const commentCounts = ref<Record<string, number>>({})
-
-// 更新评论计数
-const updateCommentCount = (essayId: string, count: number) => {
-  commentCounts.value[essayId] = count
-}
-
-// 引用文章内容并跳转到评论框
-const quoteEssay = (item: any, index: number) => {
-  // 获取文章摘要内容
-  const content = getEssaySummary(item)
-  
-  // 构造引用文本
-  const quotedContent = `> ${content}\n\n`
-  
-  // 通过giscus插件设置引用内容
-  const { $giscus } = useNuxtApp()
-  if ($giscus) {
-    $giscus.setQuote(quotedContent)
-  }
-  
-  // 平滑滚动到评论区域
-  nextTick(() => {
-    const commentElement = document.getElementById('page-comments')
-    if (commentElement) {
-      commentElement.scrollIntoView({ behavior: 'smooth' })
-      
-      // 等待滚动完成并确保评论框聚焦
-      if (import.meta.client) {
-        setTimeout(() => {
-          const iframe = commentElement.querySelector('.giscus-frame') as HTMLIFrameElement
-          if (iframe) {
-            iframe.focus()
-          }
-        }, 800)
-      }
-    }
-  })
+// 滚动到评论区
+const scrollToComments = () => {
+    nextTick(() => {
+        const commentsSection = document.getElementById('comments-section');
+        if (commentsSection) {
+            commentsSection.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+    });
 };
 
+// 处理点击评论按钮
+const handleCommentClick = (index: number, content: string) => {
+    referencedEssay.value = { index, content };
+    scrollToComments();
+};
+
+// 格式化时间显示：24小时以内显示相对时间，超过24小时显示具体时间
+function formatDisplayTime(dateString: string) {
+    const date = dayjs(dateString);
+    const now = dayjs();
+    const hoursDiff = now.diff(date, 'hour');
+    
+    if (hoursDiff < 24) {
+        // 24小时以内显示相对时间
+        return date.locale('zh-cn').fromNow().replaceAll(/\s+/g, '');
+    } else {
+        // 超过24小时显示具体时间
+        return date.format('YYYY年MM月DD日 HH:mm:ss');
+    }
+}
 </script>
 
 <template>
@@ -510,7 +494,7 @@ const quoteEssay = (item: any, index: number) => {
                                     <span class="bio">{{ user?.slogan || '这个人很懒，什么都没留下' }}</span>
                                 </div>
                                 <span v-if="essays.length > 0" class="bio">
-                                    更新时间：{{ dayjs(essays[0].date).locale('zh-cn').fromNow().replaceAll(/\s+/g, '') }}
+                                    更新时间：{{ formatDisplayTime(essays[0].date) }}
                                 </span>
                             </div>
                         </div>
@@ -557,7 +541,7 @@ const quoteEssay = (item: any, index: number) => {
                                         <i class="fas fa-check-circle verified"></i>
                                     </div>
                                     <div class="essay-date">
-                                        {{ dayjs(item.date).locale('zh-cn').fromNow().replaceAll(/\s+/g, '') }}
+                                        {{ formatDisplayTime(item.date) }}
                                     </div>
                                 </div>
                             </div>
@@ -712,7 +696,7 @@ const quoteEssay = (item: any, index: number) => {
                             <div class="essay-comment-section">
                                 <button 
                                     class="comment-button"
-                                    @click="quoteEssay(item, index)"
+                                    @click="handleCommentClick(index, getEssaySummary(item))"
                                 >
                                     <i class="fas fa-comments"></i>
                                     评论
@@ -743,15 +727,32 @@ const quoteEssay = (item: any, index: number) => {
                             <p>仅显示最近 30 条记录</p>
                         </div>
                     </div>
-                </div>
-                
-                <!-- 页面底部评论区域 -->
-                <div id="page-comments" class="page-comments-section mt-12">
-                    <GiscusComments 
-                        essay-id="essays-page"
-                        essay-content="评论区，请友好讨论"
-                        :default-show="true"
-                    />
+
+                    <!-- 统一评论区 -->
+                    <div id="comments-section" class="comments-section">
+                        <div class="comments-header">
+                            <h3 class="comments-title">
+                                <i class="fas fa-comments"></i>
+                                评论区
+                            </h3>
+                            <div v-if="referencedEssay" class="referenced-essay-info">
+                                <span class="reference-indicator">正在评论: 随笔 #{{ referencedEssay.index + 1 }}</span>
+                                <button 
+                                    class="clear-reference-btn"
+                                    @click="referencedEssay = null"
+                                    title="清除引用"
+                                >
+                                    <i class="fas fa-times"></i>
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <GiscusComments 
+                            essay-id="essays-page-comments"
+                            :essay-content="referencedEssay?.content || ''"
+                            :default-show="true"
+                        />
+                    </div>
                 </div>
             </section>
 
@@ -1238,16 +1239,6 @@ const quoteEssay = (item: any, index: number) => {
     transform: translateY(-1px);
 }
 
-.essay-comments {
-    margin-top: 0.5rem;
-    background: rgba(249, 250, 251, 0.9);
-    border-radius: 12px;
-    padding: 1rem;
-    border: 1px solid rgba(139, 90, 140, 0.2);
-    transition: background-color 0.3s ease, border-color 0.3s ease;
-    min-height: 300px; /* 确保有足够的空间显示评论组件 */
-}
-
 .dark .comment-button {
     background: rgba(194, 145, 204, 0.15);
     border-color: rgba(194, 145, 204, 0.3);
@@ -1258,20 +1249,80 @@ const quoteEssay = (item: any, index: number) => {
     background: rgba(194, 145, 204, 0.25);
 }
 
-.dark .essay-comments {
-    background: rgba(31, 41, 55, 0.9) !important;
-    border-color: rgba(194, 145, 204, 0.3) !important;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+/* 统一评论区 */
+.comments-section {
+    margin-top: 2rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid rgba(139, 90, 140, 0.2);
 }
 
-/* 确保Giscus组件容器内的元素也能正确响应主题变化 */
-.essay-comments :deep(.giscus-container) {
-    background: transparent !important;
-    min-height: 250px; /* 确保评论框有最小高度 */
+.comments-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
 }
 
-.dark .essay-comments :deep(.giscus-container) {
-    background: transparent !important;
+.comments-title {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: #8b5a8c;
+    margin: 0;
+    font-family: 'Comic Sans MS', 'XiaokeNailao', cursive, sans-serif;
+}
+
+.dark .comments-title {
+    color: #c291cc;
+}
+
+.referenced-essay-info {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: rgba(139, 90, 140, 0.1);
+    padding: 0.4rem 0.8rem;
+    border-radius: 20px;
+    font-size: 0.9rem;
+    color: #8b5a8c;
+}
+
+.dark .referenced-essay-info {
+    background: rgba(194, 145, 204, 0.15);
+    color: #c291cc;
+}
+
+.reference-indicator {
+    font-weight: 500;
+}
+
+.clear-reference-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 20px;
+    height: 20px;
+    background: rgba(139, 90, 140, 0.2);
+    border: none;
+    border-radius: 50%;
+    color: #8b5a8c;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.clear-reference-btn:hover {
+    background: rgba(139, 90, 140, 0.3);
+}
+
+.dark .clear-reference-btn {
+    background: rgba(194, 145, 204, 0.3);
+    color: #c291cc;
+}
+
+.dark .clear-reference-btn:hover {
+    background: rgba(194, 145, 204, 0.4);
 }
 
 .essay-tags {
@@ -1309,11 +1360,6 @@ const quoteEssay = (item: any, index: number) => {
     padding: 2rem 0;
     color: #999;
     font-size: 0.9rem;
-}
-
-/* 页面底部评论区域 */
-.page-comments-section {
-    scroll-margin-top: 2rem;
 }
 
 /* 响应式调整 */

@@ -1,38 +1,13 @@
 <template>
-  <div class="giscus-container dark:bg-gray-800/50 dark:rounded-2xl" data-giscus-component>
-    <div class="giscus-comment-header dark:bg-gray-700 dark:border-gray-600" @click="toggleComments">
-      <div class="comment-title">
-        <i class="fas fa-comments"></i>
-        <span class="dark:text-gray-200">评论</span>
-        <span v-if="actualCommentCount > 0" class="comment-count dark:text-gray-400">({{ actualCommentCount }})</span>
-      </div>
-      <i 
-        class="fas fa-chevron-down transition-transform duration-200 dark:text-gray-300"
-        :class="{ 'rotate-180': showComments }"
-      ></i>
+  <div class="giscus-container dark:bg-gray-800/50 dark:rounded-2xl">
+    <div class="giscus-wrapper dark:bg-gray-700/50">
+      <div ref="giscusContainer" class="giscus"></div>
     </div>
-    
-    <Transition
-      enter-active-class="transition-all duration-300 ease-out"
-      leave-active-class="transition-all duration-200 ease-in"
-      enter-from-class="opacity-0 -translate-y-2"
-      enter-to-class="opacity-100 translate-y-0"
-      leave-from-class="opacity-100 translate-y-0"
-      leave-to-class="opacity-0 -translate-y-2"
-    >
-      <div v-show="showComments" class="giscus-wrapper dark:bg-gray-700/50">
-        <div v-if="essayContent" class="referenced-content dark:bg-gray-600/50 dark:border-gray-500">
-          <div class="reference-label dark:text-gray-300">引用原文：</div>
-          <div class="reference-content dark:text-gray-200">{{ essayContent }}</div>
-        </div>
-        <div ref="giscusContainer" class="giscus"></div>
-      </div>
-    </Transition>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, onUnmounted, watch, nextTick, computed, onUpdated } from 'vue'
+import { ref, onMounted, onUnmounted, watch, nextTick, computed } from 'vue'
 
 interface Props {
   essayId: string
@@ -41,21 +16,16 @@ interface Props {
   defaultShow?: boolean
 }
 
-const emit = defineEmits<{
-  (e: 'update:commentCount', count: number): void
-}>()
-
 const props = withDefaults(defineProps<Props>(), {
   essayContent: '',
-  commentCount: undefined,
+  commentCount: 0,
   defaultShow: false
 })
 
 const colorMode = useColorMode()
-const showComments = ref(props.defaultShow)
+const showComments = ref(true) // 页面底部的评论区始终显示
 const giscusContainer = ref<HTMLElement>()
 const refreshInterval = ref<NodeJS.Timeout | null>(null)
-const actualCommentCount = ref(0)
 
 // 计算当前主题
 const isDark = computed(() => colorMode.value === 'dark')
@@ -65,39 +35,10 @@ const toggleComments = () => {
   showComments.value = !showComments.value
 }
 
-// 获取评论数量
-const fetchCommentCount = async () => {
-  try {
-    // 使用GitHub API获取讨论数量
-    const response = await fetch(
-      `https://api.github.com/repos/zsxcoder/giscus-comments/issues?state=all&labels=${encodeURIComponent(props.essayId)}`
-    )
-    
-    if (response.ok) {
-      const issues = await response.json()
-      // 查找匹配特定标签的议题
-      const matchingIssues = issues.filter((issue: any) => 
-        issue.labels.some((label: any) => label.name === props.essayId)
-      )
-      
-      if (matchingIssues.length > 0) {
-        const totalCount = matchingIssues.reduce((sum: number, issue: any) => sum + issue.comments, 0)
-        actualCommentCount.value = totalCount
-        emit('update:commentCount', totalCount)
-      } else {
-        // 如果没有找到匹配的议题，设为0
-        actualCommentCount.value = 0
-        emit('update:commentCount', 0)
-      }
-    }
-  } catch (error) {
-    console.error('获取评论数量失败:', error)
-    // 出错时保持现有值或设为0
-    if (actualCommentCount.value === 0 && props.commentCount !== undefined) {
-      actualCommentCount.value = props.commentCount
-      emit('update:commentCount', props.commentCount)
-    }
-  }
+// 预处理引用内容，用于评论输入框
+const getQuotedContent = () => {
+  if (!props.essayContent) return ''
+  return `> ${props.essayContent}\n\n`
 }
 
 // 加载自定义Giscus样式
@@ -143,49 +84,6 @@ const loadGiscusStyles = () => {
   }
 }
 
-// 预处理引用内容，用于评论输入框
-const getQuotedContent = () => {
-  // 优先使用全局引用内容
-  const { $giscus } = useNuxtApp()
-  const globalQuote = $giscus?.getQuote()
-  
-  if (globalQuote) {
-    return globalQuote
-  }
-  
-  if (props.essayContent) {
-    return `> ${props.essayContent}\n\n`
-  }
-  
-  return ''
-}
-
-// 监听全局引用内容变化
-const checkAndSetQuoteContent = () => {
-  if (import.meta.client && giscusContainer.value) {
-    const { $giscus } = useNuxtApp()
-    const globalQuote = $giscus?.getQuote()
-    
-    if (globalQuote && showComments.value) {
-      const textarea = giscusContainer.value.querySelector('textarea')
-      if (textarea && !textarea.value) {
-        textarea.value = globalQuote
-        const inputEvent = new Event('input', { bubbles: true })
-        textarea.dispatchEvent(inputEvent)
-        textarea.focus()
-        
-        // 清除全局引用内容
-        $giscus.clearQuote()
-      }
-    }
-  }
-}
-
-// 在组件更新时检查引用内容
-onUpdated(() => {
-  checkAndSetQuoteContent()
-})
-
 // 加载Giscus脚本
 const loadGiscus = () => {
   if (import.meta.client && giscusContainer.value) {
@@ -219,102 +117,65 @@ const loadGiscus = () => {
     giscusContainer.value.appendChild(script)
     
     // 如果有引用内容，等待一段时间后设置到输入框
-    const hasQuoteContent = props.essayContent || useNuxtApp().$giscus?.getQuote()
-    if (hasQuoteContent) {
-      const setQuotedContent = () => {
+    if (props.essayContent) {
+      // 尝试多次设置引用内容，确保Giscus已加载完成
+      const setQuotedContent = (attempts = 0) => {
+        if (attempts > 5) return // 最多尝试5次
+        
         const textarea = giscusContainer.value?.querySelector('textarea')
-        if (textarea) {
-          // 只有当文本框为空时才设置引用内容，避免重复设置
-          if (!textarea.value) {
-            const quotedContent = getQuotedContent()
-            textarea.value = quotedContent
-            // 触发input事件，确保Giscus能识别到内容变化
-            const inputEvent = new Event('input', { bubbles: true })
-            textarea.dispatchEvent(inputEvent)
-            
-            // 将光标移动到引用内容的末尾
-            textarea.setSelectionRange(textarea.value.length, textarea.value.length)
-            textarea.focus()
-            
-            // 清除全局引用内容
-            const { $giscus } = useNuxtApp()
-            if ($giscus && $giscus.getQuote()) {
-              $giscus.clearQuote()
-            }
-          }
-          return true
+        if (textarea && textarea.value !== undefined) {
+          textarea.value = getQuotedContent()
+          
+          // 创建并触发多种事件，确保Giscus能识别到内容变化
+          const inputEvent = new Event('input', { bubbles: true })
+          const changeEvent = new Event('change', { bubbles: true })
+          const keyupEvent = new KeyboardEvent('keyup', { bubbles: true })
+          
+          textarea.dispatchEvent(inputEvent)
+          textarea.dispatchEvent(changeEvent)
+          textarea.dispatchEvent(keyupEvent)
+          
+          // 尝试通过设置内部属性来触发更新
+          const internalInputEvent = new CustomEvent('giscus-input', { 
+            bubbles: true, 
+            detail: { value: textarea.value } 
+          })
+          textarea.dispatchEvent(internalInputEvent)
+          
+          // 将光标移动到引用内容的末尾
+          textarea.setSelectionRange(textarea.value.length, textarea.value.length)
+          textarea.focus()
+        } else {
+          // 如果还没有加载，再次尝试
+          setTimeout(() => setQuotedContent(attempts + 1), 1000)
         }
-        return false
       }
       
-      // 先尝试直接执行
-      if (import.meta.client) {
-        setTimeout(() => {
-          if (!setQuotedContent()) {
-            // 确保只在客户端运行
-            if (import.meta.client) {
-              // 如果立即设置失败，则使用定时器重试
-              const interval = setInterval(() => {
-                if (setQuotedContent()) {
-                  clearInterval(interval)
-                }
-              }, 500)
-              
-              // 最多尝试10秒钟
-              setTimeout(() => {
-                clearInterval(interval)
-              }, 10000)
-            }
-          }
-        }, 100) // 稍微延迟执行，确保DOM已完全加载
-      }
+      // 初始延迟1秒后开始尝试
+      setTimeout(() => setQuotedContent(), 1000)
     }
     
     // 监听Giscus消息，确保评论能够正确更新
-    const handleMessage = (event: MessageEvent) => {
+    window.addEventListener('message', (event) => {
       if (event.origin !== 'https://giscus.app') return
       if (!event.data || typeof event.data.giscus !== 'object') return
       
       // 处理Giscus返回的数据，包括评论数量
       const giscusData = event.data.giscus
       if (giscusData.discussion) {
-        const newCount = giscusData.discussion.totalCommentCount || 0
-        actualCommentCount.value = newCount
-        // 发出评论计数更新事件
-        emit('update:commentCount', newCount)
+        actualCommentCount.value = giscusData.discussion.totalCommentCount || 0
       }
-    }
-    
-    window.addEventListener('message', handleMessage)
-    
-    // 在组件卸载时移除事件监听器
-    const cleanup = () => {
-      window.removeEventListener('message', handleMessage)
-    }
-    
-    return cleanup
+    })
   }
-  
-  return () => {} // 默认空的清理函数
 }
 
 // 监听showComments变化，加载评论
 watch(showComments, (newValue) => {
   if (newValue) {
     nextTick(() => {
-      const cleanup = loadGiscus()
+      loadGiscus()
       // 设置定期刷新机制，确保新评论能及时显示
       setupCommentRefresh()
-      
-      // 检查是否有需要设置的引用内容
-      if (import.meta.client) {
-        setTimeout(() => {
-          checkAndSetQuoteContent()
-        }, 500)
-      }
-      
-      // 组件卸载时进行清理
-      onUnmounted(cleanup)
     })
   } else {
     // 停止刷新机制
@@ -333,10 +194,40 @@ watch(() => props.essayId, () => {
       setupCommentRefresh()
     })
   }
-  
-  // 当essayId改变时重新获取评论数量
-  fetchCommentCount()
-}, { immediate: true })
+})
+
+// 监听essayContent变化，更新引用内容
+watch(() => props.essayContent, () => {
+  if (showComments.value && props.essayContent) {
+    // 延迟一点时间确保Giscus已经加载
+    setTimeout(() => {
+      const textarea = giscusContainer.value?.querySelector('textarea')
+      if (textarea) {
+        const currentValue = textarea.value
+        const quotedContent = getQuotedContent()
+        
+        // 如果当前已有内容，先检查是否包含引用
+        if (currentValue && currentValue.startsWith('>')) {
+          // 替换现有引用
+          const lines = currentValue.split('\n')
+          const endOfQuote = lines.findIndex(line => !line.startsWith('>'))
+          const newContent = quotedContent + lines.slice(endOfQuote).join('\n')
+          textarea.value = newContent
+        } else {
+          // 在现有内容前添加引用
+          textarea.value = quotedContent + currentValue
+        }
+        
+        // 触发更新事件
+        const inputEvent = new Event('input', { bubbles: true })
+        textarea.dispatchEvent(inputEvent)
+        
+        // 将光标移动到末尾
+        textarea.setSelectionRange(textarea.value.length, textarea.value.length)
+      }
+    }, 500)
+  }
+})
 
 // 设置评论刷新机制
 const setupCommentRefresh = () => {
@@ -345,14 +236,10 @@ const setupCommentRefresh = () => {
     clearInterval(refreshInterval.value)
   }
   
-  // 确保只在客户端运行
-  if (import.meta.client) {
-    // 每30秒刷新一次评论，确保新评论能显示
-    refreshInterval.value = setInterval(() => {
-      refreshGiscus()
-      fetchCommentCount() // 同时也刷新评论计数
-    }, 30000)
-  }
+  // 每30秒刷新一次评论，确保新评论能显示
+  refreshInterval.value = setInterval(() => {
+    refreshGiscus()
+  }, 30000)
 }
 
 // 刷新Giscus评论
@@ -418,44 +305,17 @@ watch(isDark, () => {
 const refreshComments = () => {
   if (showComments.value) {
     refreshGiscus()
-    fetchCommentCount()
-  }
-}
-
-// 手动设置引用内容
-const setQuotedContent = (content: string) => {
-  if (import.meta.client) {
-    // 存储到全局状态
-    const { $giscus } = useNuxtApp()
-    if ($giscus) {
-      $giscus.setQuote(content)
-    }
-    
-    // 如果评论组件已经加载，尝试直接设置内容
-    if (giscusContainer.value) {
-      const textarea = giscusContainer.value.querySelector('textarea')
-      if (textarea && !textarea.value) {
-        textarea.value = content
-        const inputEvent = new Event('input', { bubbles: true })
-        textarea.dispatchEvent(inputEvent)
-        textarea.focus()
-      }
-    }
   }
 }
 
 // 暴露给父组件
 defineExpose({
-  refreshComments,
-  setQuotedContent
+  refreshComments
 })
 
-// 初始化时如果评论区域是打开状态，则加载
+// 初始化时自动加载评论
 onMounted(() => {
-  // 获取初始评论数量
-  fetchCommentCount()
-  
-  // 无论默认状态如何，都需要设置主题监听器
+  // 设置主题监听器
   if (import.meta.client) {
     mediaQuery = window.matchMedia('(prefers-color-scheme: dark)')
     updateTheme = (e: MediaQueryListEvent | MediaQueryList) => {
@@ -468,12 +328,11 @@ onMounted(() => {
     
     mediaQuery.addEventListener('change', updateTheme)
     
-    // 如果默认展开，立即加载评论
-    if (showComments.value) {
-      nextTick(() => {
-        loadGiscus()
-      })
-    }
+    // 自动加载评论
+    nextTick(() => {
+      loadGiscus()
+      setupCommentRefresh()
+    })
   }
 })
 </script>
@@ -634,8 +493,6 @@ onMounted(() => {
   border: 1px solid rgba(139, 90, 140, 0.15);
   box-shadow: 0 2px 8px rgba(139, 90, 140, 0.05);
   font-family: 'Comic Sans MS', 'XiaokeNailao', cursive, sans-serif;
-  background: rgba(255, 255, 255, 0.9);
-  backdrop-filter: blur(8px);
 }
 
 /* 深度选择器，用于修改Giscus内部样式 */
@@ -650,7 +507,6 @@ onMounted(() => {
   transition: background-color 0.3s ease, border-color 0.3s ease;
 }
 
-.dark .giscus,
 .dark :deep(.giscus-frame) {
   background: rgba(31, 41, 55, 0.95) !important;
   border-color: rgba(194, 145, 204, 0.3) !important;
@@ -662,12 +518,10 @@ onMounted(() => {
   border-radius: 12px;
   overflow: hidden;
   background: rgba(255, 255, 255, 0.9);
-  transition: background-color 0.3s ease;
 }
 
 .dark :deep(.giscus-container) {
   background: rgba(31, 41, 55, 0.95) !important;
-  border-color: rgba(194, 145, 204, 0.3) !important;
 }
 
 /* 主容器样式 */
@@ -681,12 +535,10 @@ onMounted(() => {
 :deep(.giscus-main) {
   padding: 1.25rem;
   background: rgba(255, 255, 255, 0.9);
-  transition: background-color 0.3s ease;
 }
 
 .dark :deep(.giscus-main) {
   background: rgba(31, 41, 55, 0.95) !important;
-  border-color: rgba(194, 145, 204, 0.3) !important;
 }
 
 /* 评论框样式 */
