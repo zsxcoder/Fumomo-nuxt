@@ -1150,6 +1150,15 @@ function getEssaySummary(item: any): string {
 /* 评论区域 */
 .essay-comments {
     margin-top: 0.5rem;
+    background: rgba(249, 250, 251, 0.5);
+    border-radius: 12px;
+    padding: 0.5rem;
+    border: 1px solid rgba(139, 90, 140, 0.1);
+}
+
+.dark .essay-comments {
+    background: rgba(31, 41, 55, 0.5);
+    border-color: rgba(194, 145, 204, 0.2);
 }
 
 .essay-tags {
@@ -1202,5 +1211,144 @@ function getEssaySummary(item: any): string {
     .zone_imgbox {
         grid-template-columns: repeat(2, 1fr);
     }
+}
+
+/* 深色模式适配 */
+.dark .steam-loading-container {
+    color: #e5e7eb;
+}
+
+.dark .steam-loading-header {
+    color: #f3f4f6;
+}
+
+.dark .steam-progress-bar {
+    background-color: #374151;
+}
+
+.dark .steam-progress {
+    background-color: #a974a9;
+}
+
+.dark .steam-loading-subtext {
+    color: #9ca3af;
+}
+
+/* 用户资料区域深色模式 */
+.dark .profile {
+    background: rgba(31, 41, 55, 0.8);
+    border-color: rgba(75, 85, 99, 0.3);
+}
+
+.dark .avatar {
+    border-color: #a974a9;
+}
+
+.dark .username {
+    color: #f3f4f6;
+}
+
+.dark .verified {
+    color: #a974a9;
+}
+
+.dark .bio {
+    color: #d1d5db;
+}
+
+/* 统计卡片深色模式 */
+.dark .stat-card {
+    background: rgba(31, 41, 55, 0.8);
+    border-color: rgba(75, 85, 99, 0.3);
+}
+
+.dark .stat-icon {
+    color: #a974a9;
+}
+
+.dark .stat-info .stat-label {
+    color: #9ca3af;
+}
+
+.dark .stat-info .stat-value {
+    color: #f3f4f6;
+}
+
+/* 动态项深色模式 */
+.dark .essay-item {
+    background: rgba(31, 41, 55, 0.8);
+    border-color: rgba(75, 85, 99, 0.3);
+}
+
+.dark .essay-meta {
+    color: #e5e7eb;
+}
+
+.dark .essay-nick {
+    color: #f3f4f6;
+}
+
+.dark .essay-nick .verified {
+    color: #a974a9;
+}
+
+.dark .essay-date {
+    color: #9ca3af;
+}
+
+.dark .essay-content-item {
+    color: #e5e7eb;
+}
+
+/* 豆瓣卡片深色模式 */
+.dark .douban-card {
+    background-color: rgba(31, 41, 55, 0.8);
+}
+
+.dark .douban-card-item {
+    color: #e5e7eb;
+}
+
+/* 外部链接深色模式 */
+.dark .external-link {
+    background-color: rgba(31, 41, 55, 0.8);
+}
+
+.dark .link-title {
+    color: #e5e7eb;
+}
+
+.dark .link-right .icon {
+    color: #9ca3af;
+}
+
+/* 底部区域深色模式 */
+.dark .essay-bottom {
+    color: #9ca3af;
+}
+
+.dark .tag,
+.dark .location {
+    background-color: rgba(139, 90, 140, 0.2);
+}
+
+.dark .location {
+    color: #a974a9;
+}
+
+/* 底部提示深色模式 */
+.dark .essays-footer {
+    color: #9ca3af;
+}
+
+/* 动态内容链接深色模式 */
+.dark :deep(.essay_content_link) {
+    background: linear-gradient(rgba(169, 116, 169, 0.2), rgba(169, 116, 169, 0.2)) no-repeat center bottom / 100% 0.1em;
+    color: #a974a9;
+}
+
+.dark :deep(.essay_content_link:hover) {
+    border-radius: 0.3em;
+    background-size: 100% 100%;
 }
 </style>

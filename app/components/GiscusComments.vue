@@ -390,8 +390,20 @@ onMounted(() => {
 }
 
 .dark :deep(.giscus-frame) {
-  background: rgba(31, 41, 55, 0.9);
-  border-color: rgba(194, 145, 204, 0.2);
+  background: rgba(31, 41, 55, 0.95) !important;
+  border-color: rgba(194, 145, 204, 0.3) !important;
+}
+
+/* 主容器样式 - 深色模式适配 */
+:deep(.giscus-container) {
+  padding: 0;
+  border-radius: 12px;
+  overflow: hidden;
+  background: rgba(255, 255, 255, 0.9);
+}
+
+.dark :deep(.giscus-container) {
+  background: rgba(31, 41, 55, 0.95) !important;
 }
 
 /* 主容器样式 */
@@ -404,6 +416,11 @@ onMounted(() => {
 /* 顶部样式 */
 :deep(.giscus-main) {
   padding: 1.25rem;
+  background: rgba(255, 255, 255, 0.9);
+}
+
+.dark :deep(.giscus-main) {
+  background: rgba(31, 41, 55, 0.95) !important;
 }
 
 /* 评论框样式 */
@@ -416,26 +433,38 @@ onMounted(() => {
 }
 
 .dark :deep(.giscus-comment-box) {
-  background: rgba(31, 41, 55, 0.7);
-  border-color: rgba(194, 145, 204, 0.2);
+  background: rgba(31, 41, 55, 0.8) !important;
+  border-color: rgba(194, 145, 204, 0.3) !important;
 }
 
 /* 评论输入框样式 */
 :deep(.giscus-textarea),
 :deep(.giscus-input) {
-  background-color: rgba(255, 255, 255, 0.9) !important;
+  background-color: rgba(255, 255, 255, 0.95) !important;
   border-radius: 8px !important;
   border: 1px solid rgba(139, 90, 140, 0.2) !important;
   font-family: 'Comic Sans MS', 'XiaokeNailao', cursive, sans-serif !important;
   transition: all 0.2s ease !important;
   padding: 0.75rem !important;
+  color: #333 !important;
 }
 
 .dark :deep(.giscus-textarea),
 .dark :deep(.giscus-input) {
-  background-color: rgba(31, 41, 55, 0.9) !important;
-  border-color: rgba(194, 145, 204, 0.3) !important;
+  background-color: rgba(31, 41, 55, 0.95) !important;
+  border-color: rgba(194, 145, 204, 0.4) !important;
   color: #f3f4f6 !important;
+}
+
+/* 输入框占位符颜色 */
+:deep(.giscus-textarea::placeholder),
+:deep(.giscus-input::placeholder) {
+  color: #999 !important;
+}
+
+.dark :deep(.giscus-textarea::placeholder),
+.dark :deep(.giscus-input::placeholder) {
+  color: #9ca3af !important;
 }
 
 :deep(.giscus-textarea:focus),
@@ -478,7 +507,7 @@ onMounted(() => {
 /* 评论卡片样式 */
 :deep(.giscus-comment) {
   border-radius: 10px !important;
-  background: rgba(255, 255, 255, 0.8) !important;
+  background: rgba(255, 255, 255, 0.9) !important;
   border: 1px solid rgba(139, 90, 140, 0.1) !important;
   margin-bottom: 1rem !important;
   padding: 1rem !important;
@@ -486,8 +515,17 @@ onMounted(() => {
 }
 
 .dark :deep(.giscus-comment) {
-  background: rgba(31, 41, 55, 0.7) !important;
-  border-color: rgba(194, 145, 204, 0.15) !important;
+  background: rgba(31, 41, 55, 0.8) !important;
+  border-color: rgba(194, 145, 204, 0.3) !important;
+}
+
+/* 评论内容文本颜色 */
+:deep(.giscus-comment-text) {
+  color: #333 !important;
+}
+
+.dark :deep(.giscus-comment-text) {
+  color: #e5e7eb !important;
 }
 
 :deep(.giscus-comment:hover) {
@@ -509,27 +547,28 @@ onMounted(() => {
 
 /* 表情反应按钮样式 */
 :deep(.giscus-reactions) {
-  background: rgba(255, 255, 255, 0.8) !important;
+  background: rgba(255, 255, 255, 0.9) !important;
   border-radius: 10px !important;
   border: 1px solid rgba(139, 90, 140, 0.1) !important;
 }
 
 .dark :deep(.giscus-reactions) {
-  background: rgba(31, 41, 55, 0.7) !important;
-  border-color: rgba(194, 145, 204, 0.15) !important;
+  background: rgba(31, 41, 55, 0.8) !important;
+  border-color: rgba(194, 145, 204, 0.3) !important;
 }
 
 :deep(.giscus-reaction-button) {
   border-radius: 20px !important;
-  background-color: rgba(255, 255, 255, 0.6) !important;
-  border: 1px solid rgba(139, 90, 140, 0.1) !important;
+  background-color: rgba(255, 255, 255, 0.8) !important;
+  border: 1px solid rgba(139, 90, 140, 0.15) !important;
   color: #8b5a8c !important;
   font-family: 'Comic Sans MS', 'XiaokeNailao', cursive, sans-serif !important;
   transition: all 0.2s ease !important;
 }
 
 .dark :deep(.giscus-reaction-button) {
-  background-color: rgba(31, 41, 55, 0.6) !important;
+  background-color: rgba(31, 41, 55, 0.8) !important;
+  border-color: rgba(194, 145, 204, 0.3) !important;
   color: #c291cc !important;
 }
 
@@ -552,9 +591,44 @@ onMounted(() => {
   opacity: 0.8 !important;
 }
 
+.dark :deep(.giscus-timestamp) {
+  color: #c291cc !important;
+}
+
 /* 加载中样式 */
 :deep(.giscus-loading) {
   border-color: #8b5a8c !important;
   border-right-color: transparent !important;
+}
+
+/* 分隔线样式 */
+:deep(.giscus-divider) {
+  border-color: rgba(139, 90, 140, 0.2) !important;
+}
+
+.dark :deep(.giscus-divider) {
+  border-color: rgba(194, 145, 204, 0.3) !important;
+}
+
+/* 用户名样式 */
+:deep(.giscus-user-name) {
+  color: #8b5a8c !important;
+}
+
+.dark :deep(.giscus-user-name) {
+  color: #c291cc !important;
+}
+
+/* 加载更多按钮 */
+:deep(.giscus-load-more) {
+  background: rgba(255, 255, 255, 0.9) !important;
+  border-color: rgba(139, 90, 140, 0.2) !important;
+  color: #8b5a8c !important;
+}
+
+.dark :deep(.giscus-load-more) {
+  background: rgba(31, 41, 55, 0.9) !important;
+  border-color: rgba(194, 145, 204, 0.3) !important;
+  color: #c291cc !important;
 }
 </style>

@@ -197,6 +197,31 @@ const currentPage = 'guestbook'
   font-family: 'Comic Sans MS', 'XiaokeNailao', cursive, sans-serif;
 }
 
+/* 深色模式适配 */
+.dark .page-header {
+  background: linear-gradient(135deg, rgba(139, 90, 140, 0.1) 0%, rgba(31, 41, 55, 0.8) 100%);
+  border-bottom-color: rgba(139, 90, 140, 0.2);
+}
+
+.dark .welcome-card {
+  background: rgba(31, 41, 55, 0.8);
+  border-color: rgba(75, 85, 99, 0.3);
+}
+
+.dark .welcome-text p {
+  color: #d1d5db;
+}
+
+.dark .welcome-text ul li {
+  color: #d1d5db;
+}
+
+.dark .notice {
+  background-color: rgba(139, 90, 140, 0.2);
+  border-color: rgba(139, 90, 140, 0.3);
+  color: #d1d5db;
+}
+
 .comment-section {
   margin-top: 3rem;
 }

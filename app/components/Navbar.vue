@@ -200,18 +200,18 @@ onUnmounted(() => {
               @mouseenter="!isMobileDevice() && toggleDropdown(item.key)"
               @mouseleave="!isMobileDevice() && closeDropdown(item.key)"
             >
-              <div class="flex items-center gap-1">
+              <div class="flex items-center gap-2">
                 <!-- 菜单文字链接 -->
                 <NuxtLink 
                   :to="item.href" 
-                  class="no-underline font-medium transition-all duration-300 relative py-2 px-4 rounded-full nav-link hover:-translate-y-0.5"
+                  class="no-underline font-medium transition-all duration-300 relative py-2 px-3 rounded-full nav-link hover:-translate-y-0.5"
                   :class="isCurrentPage(item) ? 'bg-primary/10 text-primary' : 'text-muted hover:text-primary'"
                 >
                   {{ item.name }}
                 </NuxtLink>
                 <!-- 下拉箭头按钮 -->
                 <button
-                  class="flex items-center justify-center w-6 h-6 rounded-full hover:bg-primary/10 transition-colors"
+                  class="flex items-center justify-center w-5 h-5 rounded-full hover:bg-primary/10 transition-colors"
                   @click="toggleDropdown(item.key, $event)"
                   :aria-expanded="openDropdowns.has(item.key)"
                   :aria-haspopup="true"
@@ -307,7 +307,7 @@ onUnmounted(() => {
                 <!-- 菜单文字链接 -->
                 <NuxtLink 
                   :to="item.href" 
-                  class="no-underline font-medium transition-all duration-300 text-sm hover:bg-primary/10 rounded-lg px-3 py-2 flex-1 text-center"
+                  class="no-underline font-medium transition-all duration-300 text-sm hover:bg-primary/10 rounded-lg px-2 py-2 flex-1 text-center"
                   :class="isCurrentPage(item) ? 'bg-primary/10 text-primary' : 'text-muted hover:text-primary'"
                   @click="closeMenu"
                 >
@@ -315,7 +315,7 @@ onUnmounted(() => {
                 </NuxtLink>
                 <!-- 下拉箭头按钮 -->
                 <button
-                  class="flex items-center justify-center w-6 h-6 rounded-full hover:bg-primary/10 transition-colors ml-2"
+                  class="flex items-center justify-center w-5 h-5 rounded-full hover:bg-primary/10 transition-colors"
                   @click.stop="toggleDropdown(item.key, $event, true)"
                   :aria-expanded="openDropdowns.has(item.key)"
                   :aria-haspopup="true"
@@ -566,12 +566,32 @@ onUnmounted(() => {
   min-height: 44px;
 }
 
+/* 调整多级菜单间距 */
+#nav-menu .group div {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+#nav-menu .group .nav-link {
+  padding-right: 0.25rem;
+}
+
+#nav-menu .group button {
+  margin-left: 0.125rem;
+}
+
 /* 确保移动端菜单项对齐 */
 @media (max-width: 768px) {
   #nav-menu li {
     display: flex;
     align-items: center;
     justify-content: center;
+  }
+  
+  /* 调整移动端多级菜单间距 */
+  .mobile-menu-container .flex.items-center.justify-between {
+    gap: 0.25rem;
   }
 }
 
