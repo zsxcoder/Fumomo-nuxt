@@ -133,9 +133,11 @@ const handleWheel = (event: WheelEvent) => {
         showDisperse.value = true;
 
         // 延迟导航到友链页面
-        setTimeout(() => {
-            navigateTo("/friends");
-        }, 1000);
+        if (import.meta.client) {
+            setTimeout(() => {
+                navigateTo("/friends");
+            }, 1000);
+        }
     }
 };
 
@@ -396,6 +398,57 @@ function getEssaySummary(item: any): string {
         ? textContent.substring(0, 100) + '...' 
         : textContent;
 }
+
+// 当前被引用的随笔
+const quotedEssay = ref<{
+  index: number;
+  content: string;
+} | null>(null);
+
+// 管理评论显示状态
+const commentVisibility = ref<Record<number, boolean>>({})
+
+// 管理评论计数
+const commentCounts = ref<Record<string, number>>({})
+
+// 更新评论计数
+const updateCommentCount = (essayId: string, count: number) => {
+  commentCounts.value[essayId] = count
+}
+
+// 引用文章内容并跳转到评论框
+const quoteEssay = (item: any, index: number) => {
+  // 获取文章摘要内容
+  const content = getEssaySummary(item)
+  
+  // 构造引用文本
+  const quotedContent = `> ${content}\n\n`
+  
+  // 通过giscus插件设置引用内容
+  const { $giscus } = useNuxtApp()
+  if ($giscus) {
+    $giscus.setQuote(quotedContent)
+  }
+  
+  // 平滑滚动到评论区域
+  nextTick(() => {
+    const commentElement = document.getElementById('page-comments')
+    if (commentElement) {
+      commentElement.scrollIntoView({ behavior: 'smooth' })
+      
+      // 等待滚动完成并确保评论框聚焦
+      if (import.meta.client) {
+        setTimeout(() => {
+          const iframe = commentElement.querySelector('.giscus-frame') as HTMLIFrameElement
+          if (iframe) {
+            iframe.focus()
+          }
+        }, 800)
+      }
+    }
+  })
+};
+
 </script>
 
 <template>
@@ -655,13 +708,15 @@ function getEssaySummary(item: any): string {
                                 </div>
                             </div>
 
-                            <!-- Giscus 评论区域 -->
-                            <div class="essay-comments">
-                                <GiscusComments 
-                                    :essay-id="`essay-${index}`"
-                                    :essay-content="getEssaySummary(item)"
-                                    :default-show="true"
-                                />
+                            <!-- 评论按钮 -->
+                            <div class="essay-comment-section">
+                                <button 
+                                    class="comment-button"
+                                    @click="quoteEssay(item, index)"
+                                >
+                                    <i class="fas fa-comments"></i>
+                                    评论
+                                </button>
                             </div>
 
                             <!-- 底部区域 -->
@@ -688,6 +743,15 @@ function getEssaySummary(item: any): string {
                             <p>仅显示最近 30 条记录</p>
                         </div>
                     </div>
+                </div>
+                
+                <!-- 页面底部评论区域 -->
+                <div id="page-comments" class="page-comments-section mt-12">
+                    <GiscusComments 
+                        essay-id="essays-page"
+                        essay-content="评论区，请友好讨论"
+                        :default-show="true"
+                    />
                 </div>
             </section>
 
@@ -1150,6 +1214,30 @@ function getEssaySummary(item: any): string {
 }
 
 /* 评论区域 */
+.essay-comment-section {
+    margin-top: 0.5rem;
+}
+
+.comment-button {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 1rem;
+    background: rgba(139, 90, 140, 0.1);
+    border: 1px solid rgba(139, 90, 140, 0.2);
+    border-radius: 8px;
+    color: #8b5a8c;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-family: 'Comic Sans MS', 'XiaokeNailao', cursive, sans-serif;
+}
+
+.comment-button:hover {
+    background: rgba(139, 90, 140, 0.2);
+    transform: translateY(-1px);
+}
+
 .essay-comments {
     margin-top: 0.5rem;
     background: rgba(249, 250, 251, 0.9);
@@ -1158,6 +1246,16 @@ function getEssaySummary(item: any): string {
     border: 1px solid rgba(139, 90, 140, 0.2);
     transition: background-color 0.3s ease, border-color 0.3s ease;
     min-height: 300px; /* 确保有足够的空间显示评论组件 */
+}
+
+.dark .comment-button {
+    background: rgba(194, 145, 204, 0.15);
+    border-color: rgba(194, 145, 204, 0.3);
+    color: #c291cc;
+}
+
+.dark .comment-button:hover {
+    background: rgba(194, 145, 204, 0.25);
 }
 
 .dark .essay-comments {
@@ -1211,6 +1309,11 @@ function getEssaySummary(item: any): string {
     padding: 2rem 0;
     color: #999;
     font-size: 0.9rem;
+}
+
+/* 页面底部评论区域 */
+.page-comments-section {
+    scroll-margin-top: 2rem;
 }
 
 /* 响应式调整 */
