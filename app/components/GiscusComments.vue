@@ -4,7 +4,7 @@
       <div class="comment-title">
         <i class="fas fa-comments"></i>
         <span class="dark:text-gray-200">评论</span>
-        <span v-if="commentCount > 0" class="comment-count dark:text-gray-400">({{ commentCount }})</span>
+        <span v-if="actualCommentCount > 0" class="comment-count dark:text-gray-400">({{ actualCommentCount }})</span>
       </div>
       <i 
         class="fas fa-chevron-down transition-transform duration-200 dark:text-gray-300"
@@ -43,7 +43,7 @@ interface Props {
 
 const props = withDefaults(defineProps<Props>(), {
   essayContent: '',
-  commentCount: 0,
+  commentCount: undefined,
   defaultShow: false
 })
 
@@ -51,6 +51,7 @@ const colorMode = useColorMode()
 const showComments = ref(props.defaultShow)
 const giscusContainer = ref<HTMLElement>()
 const refreshInterval = ref<NodeJS.Timeout | null>(null)
+const actualCommentCount = ref(0)
 
 // 计算当前主题
 const isDark = computed(() => colorMode.value === 'dark')
@@ -58,6 +59,37 @@ const isDark = computed(() => colorMode.value === 'dark')
 // 切换评论显示状态
 const toggleComments = () => {
   showComments.value = !showComments.value
+}
+
+// 获取评论数量
+const fetchCommentCount = async () => {
+  try {
+    // 使用GitHub API获取讨论数量
+    const response = await fetch(
+      `https://api.github.com/repos/zsxcoder/Fumomo-nuxt/discussions?state=open&per_page=100`
+    )
+    
+    if (response.ok) {
+      const discussions = await response.json()
+      // 查找匹配特定term的讨论
+      const matchingDiscussion = discussions.find((discussion: any) => 
+        discussion.title === props.essayId
+      )
+      
+      if (matchingDiscussion) {
+        actualCommentCount.value = matchingDiscussion.comments.totalCount || 0
+      } else {
+        // 如果没有找到精确匹配的讨论，设为0
+        actualCommentCount.value = 0
+      }
+    }
+  } catch (error) {
+    console.error('获取评论数量失败:', error)
+    // 出错时保持现有值或设为0
+    if (actualCommentCount.value === 0 && props.commentCount !== undefined) {
+      actualCommentCount.value = props.commentCount
+    }
+  }
 }
 
 // 加载自定义Giscus样式
@@ -115,13 +147,13 @@ const loadGiscus = () => {
     // 创建Giscus脚本元素
     const script = document.createElement('script')
     script.src = 'https://giscus.app/client.js'
-    script.setAttribute('data-repo', 'zsxcoder/Fumomo-nuxt')
+    script.setAttribute('data-repo', 'zsxcoder/giscus-comments')
     script.setAttribute('data-repo-id', 'R_kgDOQoZP0g')
-    script.setAttribute('data-category', 'General')
+    script.setAttribute('data-category', 'home')
     script.setAttribute('data-category-id', 'DIC_kwDOQoZP0s4Czw_Z')
-    script.setAttribute('data-mapping', 'specific')
+    script.setAttribute('data-mapping', 'pathname')
     script.setAttribute('data-term', props.essayId)
-    script.setAttribute('data-strict', '0')
+    script.setAttribute('data-strict', '1')
     script.setAttribute('data-reactions-enabled', '1')
     script.setAttribute('data-emit-metadata', '0')
     script.setAttribute('data-input-position', 'top')
@@ -136,23 +168,40 @@ const loadGiscus = () => {
     giscusContainer.value.appendChild(script)
     
     // 监听Giscus消息，确保评论能够正确更新
-    window.addEventListener('message', (event) => {
+    const handleMessage = (event: MessageEvent) => {
       if (event.origin !== 'https://giscus.app') return
       if (!event.data || typeof event.data.giscus !== 'object') return
       
-      // 可以在这里处理Giscus的消息
-      console.log('Giscus message:', event.data.giscus)
-    })
+      // 处理Giscus返回的数据，包括评论数量
+      const giscusData = event.data.giscus
+      if (giscusData.discussion) {
+        actualCommentCount.value = giscusData.discussion.totalCommentCount || 0
+      }
+    }
+    
+    window.addEventListener('message', handleMessage)
+    
+    // 在组件卸载时移除事件监听器
+    const cleanup = () => {
+      window.removeEventListener('message', handleMessage)
+    }
+    
+    return cleanup
   }
+  
+  return () => {} // 默认空的清理函数
 }
 
 // 监听showComments变化，加载评论
 watch(showComments, (newValue) => {
   if (newValue) {
     nextTick(() => {
-      loadGiscus()
+      const cleanup = loadGiscus()
       // 设置定期刷新机制，确保新评论能及时显示
       setupCommentRefresh()
+      
+      // 组件卸载时进行清理
+      onUnmounted(cleanup)
     })
   } else {
     // 停止刷新机制
@@ -171,7 +220,10 @@ watch(() => props.essayId, () => {
       setupCommentRefresh()
     })
   }
-})
+  
+  // 当essayId改变时重新获取评论数量
+  fetchCommentCount()
+}, { immediate: true })
 
 // 设置评论刷新机制
 const setupCommentRefresh = () => {
@@ -183,6 +235,7 @@ const setupCommentRefresh = () => {
   // 每30秒刷新一次评论，确保新评论能显示
   refreshInterval.value = setInterval(() => {
     refreshGiscus()
+    fetchCommentCount() // 同时也刷新评论计数
   }, 30000)
 }
 
@@ -249,6 +302,7 @@ watch(isDark, () => {
 const refreshComments = () => {
   if (showComments.value) {
     refreshGiscus()
+    fetchCommentCount()
   }
 }
 
@@ -259,6 +313,9 @@ defineExpose({
 
 // 初始化时如果评论区域是打开状态，则加载
 onMounted(() => {
+  // 获取初始评论数量
+  fetchCommentCount()
+  
   // 无论默认状态如何，都需要设置主题监听器
   if (import.meta.client) {
     mediaQuery = window.matchMedia('(prefers-color-scheme: dark)')
@@ -438,6 +495,8 @@ onMounted(() => {
   border: 1px solid rgba(139, 90, 140, 0.15);
   box-shadow: 0 2px 8px rgba(139, 90, 140, 0.05);
   font-family: 'Comic Sans MS', 'XiaokeNailao', cursive, sans-serif;
+  background: rgba(255, 255, 255, 0.9);
+  backdrop-filter: blur(8px);
 }
 
 /* 深度选择器，用于修改Giscus内部样式 */
@@ -452,6 +511,7 @@ onMounted(() => {
   transition: background-color 0.3s ease, border-color 0.3s ease;
 }
 
+.dark .giscus,
 .dark :deep(.giscus-frame) {
   background: rgba(31, 41, 55, 0.95) !important;
   border-color: rgba(194, 145, 204, 0.3) !important;
@@ -463,10 +523,12 @@ onMounted(() => {
   border-radius: 12px;
   overflow: hidden;
   background: rgba(255, 255, 255, 0.9);
+  transition: background-color 0.3s ease;
 }
 
 .dark :deep(.giscus-container) {
   background: rgba(31, 41, 55, 0.95) !important;
+  border-color: rgba(194, 145, 204, 0.3) !important;
 }
 
 /* 主容器样式 */
@@ -480,10 +542,12 @@ onMounted(() => {
 :deep(.giscus-main) {
   padding: 1.25rem;
   background: rgba(255, 255, 255, 0.9);
+  transition: background-color 0.3s ease;
 }
 
 .dark :deep(.giscus-main) {
   background: rgba(31, 41, 55, 0.95) !important;
+  border-color: rgba(194, 145, 204, 0.3) !important;
 }
 
 /* 评论框样式 */
