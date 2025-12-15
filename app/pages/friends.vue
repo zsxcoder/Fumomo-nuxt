@@ -328,10 +328,10 @@ function showToast(message: string) {
 
             <section
                 ref="friendsSectionRef"
-                class="bg-white rounded-3xl shadow-lg p-12 max-w-4xl w-full mb-12 component-card"
+                class="bg-white dark:bg-gray-800/90 rounded-3xl shadow-lg p-12 max-w-4xl w-full mb-12 component-card"
             >
-                <h1 class="text-primary text-4xl mb-2 text-center font-fumofumo">{{ pageConfig.title }}</h1>
-                <p v-if="'description' in pageConfig" class="text-muted text-xl text-center mb-8">
+                <h1 class="text-primary dark:text-primary-light text-4xl mb-2 text-center font-fumofumo">{{ pageConfig.title }}</h1>
+                <p v-if="'description' in pageConfig" class="text-muted dark:text-gray-300 text-xl text-center mb-8">
                     {{ pageConfig.description }}
                 </p>
 
@@ -342,14 +342,14 @@ function showToast(message: string) {
                         :href="friend.url"
                         target="_blank"
                         rel="noopener noreferrer"
-                        class="bg-gradient-to-br from-gray-50 to-pink-50 rounded-2xl p-6 border border-gray-200 transition-all duration-200 hover:-translate-y-0.5 cursor-pointer no-underline text-inherit hover:shadow-lg flex flex-col md:flex-row gap-2 items-center md:items-start justify-center md:justify-between"
+                        class="bg-gradient-to-br from-gray-50 dark:from-gray-800/50 to-pink-50 dark:to-purple-900/20 rounded-2xl p-6 border border-gray-200 dark:border-gray-700 transition-all duration-200 hover:-translate-y-0.5 cursor-pointer no-underline text-inherit hover:shadow-lg flex flex-col md:flex-row gap-2 items-center md:items-start justify-center md:justify-between"
                     >
                         <div class="flex items-center">
                             <img :src="friend.avatar" alt="Friend Avatar" class="w-16 h-16 rounded-full" />
                             <div class="flex flex-col items-start ml-2">
-                                <h3 class="text-primary text-xl mb-2 font-fumofumo">{{ friend.title }}</h3>
-                                <p class="text-muted text-base leading-relaxed m-0">{{ friend.description }}</p>
-                                <div class="mt-3 text-sm text-primary opacity-75">点击前往 -></div>
+                                <h3 class="text-primary dark:text-primary-light text-xl mb-2 font-fumofumo">{{ friend.title }}</h3>
+                                <p class="text-muted dark:text-gray-300 text-base leading-relaxed m-0">{{ friend.description }}</p>
+                                <div class="mt-3 text-sm text-primary dark:text-primary-light opacity-75">点击前往 -></div>
                             </div>
                         </div>
                     </a>
@@ -360,7 +360,7 @@ function showToast(message: string) {
             <section
                 ref="paginationRef"
                 v-if="totalPages > 1"
-                class="bg-white rounded-2xl shadow-lg p-6 max-w-4xl w-full mb-12 component-card"
+                class="bg-white dark:bg-gray-800/90 rounded-2xl shadow-lg p-6 max-w-4xl w-full mb-12 component-card"
             >
                 <div class="flex justify-center items-center gap-2">
                     <!-- 上一页按钮 -->
@@ -426,7 +426,7 @@ function showToast(message: string) {
             <!-- 申请友链按钮 -->
             <section
                 ref="applyButtonRef"
-                class="bg-white rounded-2xl shadow-lg p-6 max-w-4xl w-full mb-12 component-card flex justify-center items-center"
+                class="bg-white dark:bg-gray-800/90 rounded-2xl shadow-lg p-6 max-w-4xl w-full mb-12 component-card flex justify-center items-center"
             >
                 <div class="apply-section">
                     <button
@@ -785,6 +785,12 @@ function showToast(message: string) {
     min-height: 180px; /* 确保卡片有足够的高度 */
 }
 
+.dark .my-blog-card {
+    background: rgba(31, 41, 55, 0.9);
+    border-color: rgba(139, 90, 140, 0.3);
+    box-shadow: 0 4px 20px rgba(139, 90, 140, 0.12);
+}
+
 .my-blog-card:hover {
     transform: translateY(-5px);
 }
@@ -810,6 +816,10 @@ function showToast(message: string) {
     transition: transform 0.3s ease;
 }
 
+.dark .blog-avatar {
+    border-color: rgba(139, 90, 140, 0.3);
+}
+
 .blog-avatar:hover {
     transform: scale(1.05);
 }
@@ -828,6 +838,10 @@ function showToast(message: string) {
     animation: pulse 2s infinite;
 }
 
+.dark .blog-owner-badge {
+    background: #c291cc;
+}
+
 .blog-main-info {
     flex: 1;
 }
@@ -839,11 +853,19 @@ function showToast(message: string) {
     color: var(--c-text, #333);
 }
 
+.dark .blog-name {
+    color: #f3f4f6;
+}
+
 .blog-subtitle {
     font-size: 1.1rem; /* 增大字体 */
     color: var(--c-text-2, #666);
     margin: 0;
     font-weight: 500;
+}
+
+.dark .blog-subtitle {
+    color: #d1d5db;
 }
 
 .blog-content {
@@ -860,6 +882,12 @@ function showToast(message: string) {
     background: rgba(139, 90, 140, 0.06);
     border-radius: 10px;
     border-left: 3px solid var(--c-primary, #8b5a8c);
+}
+
+.dark .blog-desc {
+    color: #e5e7eb;
+    background: rgba(139, 90, 140, 0.12);
+    border-left-color: #c291cc;
 }
 
 .blog-actions {
@@ -891,6 +919,8 @@ function showToast(message: string) {
     max-width: 896px; /* 与max-w-4xl一致 */
     margin-left: auto;
     margin-right: auto;
+    width: 100%;
+    padding: 0 12px; /* 与友链卡片内边距一致 */
 }
 
 .carousel-container {
@@ -901,6 +931,12 @@ function showToast(message: string) {
     border: 1px solid var(--c-border, #e5e7eb);
     box-shadow: 0 4px 20px rgba(139, 90, 140, 0.08);
     padding: 1rem;
+    width: 100%;
+}
+
+.dark .carousel-container {
+    background: rgba(31, 41, 55, 0.9);
+    border-color: rgba(139, 90, 140, 0.3);
 }
 
 .avatars-wrapper {
@@ -935,6 +971,10 @@ function showToast(message: string) {
     transition: transform 0.3s ease;
 }
 
+.dark .avatar-image {
+    border-color: #c291cc;
+}
+
 .avatar-image:hover {
     transform: scale(1.1);
 }
@@ -944,6 +984,10 @@ function showToast(message: string) {
     color: var(--c-text, #333);
     text-align: center;
     font-weight: 500;
+}
+
+.dark .avatar-name {
+    color: #e5e7eb;
 }
 
 @keyframes scroll-left {
@@ -1028,5 +1072,32 @@ function showToast(message: string) {
     .copy-buttons {
         gap: 0.6rem;
     }
+}
+
+/* 深色模式样式 */
+.dark .apply-form {
+    background: rgba(31, 41, 55, 0.95);
+    border-color: rgba(139, 90, 140, 0.3);
+}
+
+.dark .apply-form h2 {
+    color: #f3f4f6;
+}
+
+.dark .form-group label {
+    color: #e5e7eb;
+}
+
+.dark .styled-input,
+.dark .styled-textarea {
+    background-color: rgba(31, 41, 55, 0.9);
+    border-color: rgba(139, 90, 140, 0.3);
+    color: #f3f4f6;
+}
+
+.dark .styled-input:focus,
+.dark .styled-textarea:focus {
+    border-color: #8b5a8c;
+    box-shadow: 0 0 0 3px rgba(139, 90, 140, 0.1);
 }
 </style>

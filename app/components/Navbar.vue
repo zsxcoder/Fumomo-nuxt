@@ -253,11 +253,6 @@ onUnmounted(() => {
               </Transition>
             </li>
           </template>
-          
-          <!-- 桌面端主题切换按钮 -->
-          <li class="flex items-center">
-            <ThemeToggle />
-          </li>
         </ul>
       </div>
     </nav>
@@ -354,11 +349,6 @@ onUnmounted(() => {
               </Transition>
             </li>
           </template>
-          
-          <!-- 桌面端主题切换按钮 -->
-          <li class="flex items-center">
-            <ThemeToggle />
-          </li>
         </ul>
       </div>
     </Transition>

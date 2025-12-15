@@ -50,6 +50,7 @@ const props = withDefaults(defineProps<Props>(), {
 const colorMode = useColorMode()
 const showComments = ref(props.defaultShow)
 const giscusContainer = ref<HTMLElement>()
+const refreshInterval = ref<NodeJS.Timeout | null>(null)
 
 // 计算当前主题
 const isDark = computed(() => colorMode.value === 'dark')
@@ -133,6 +134,15 @@ const loadGiscus = () => {
     
     // 添加到容器
     giscusContainer.value.appendChild(script)
+    
+    // 监听Giscus消息，确保评论能够正确更新
+    window.addEventListener('message', (event) => {
+      if (event.origin !== 'https://giscus.app') return
+      if (!event.data || typeof event.data.giscus !== 'object') return
+      
+      // 可以在这里处理Giscus的消息
+      console.log('Giscus message:', event.data.giscus)
+    })
   }
 }
 
@@ -141,7 +151,15 @@ watch(showComments, (newValue) => {
   if (newValue) {
     nextTick(() => {
       loadGiscus()
+      // 设置定期刷新机制，确保新评论能及时显示
+      setupCommentRefresh()
     })
+  } else {
+    // 停止刷新机制
+    if (refreshInterval.value) {
+      clearInterval(refreshInterval.value)
+      refreshInterval.value = null
+    }
   }
 })
 
@@ -150,9 +168,36 @@ watch(() => props.essayId, () => {
   if (showComments.value) {
     nextTick(() => {
       loadGiscus()
+      setupCommentRefresh()
     })
   }
 })
+
+// 设置评论刷新机制
+const setupCommentRefresh = () => {
+  // 清除之前的刷新机制
+  if (refreshInterval.value) {
+    clearInterval(refreshInterval.value)
+  }
+  
+  // 每30秒刷新一次评论，确保新评论能显示
+  refreshInterval.value = setInterval(() => {
+    refreshGiscus()
+  }, 30000)
+}
+
+// 刷新Giscus评论
+const refreshGiscus = () => {
+  const giscusIframe = document.querySelector('.giscus-frame') as HTMLIFrameElement
+  if (giscusIframe && giscusIframe.contentWindow) {
+    // 发送消息刷新评论
+    giscusIframe.contentWindow.postMessage({
+      giscus: {
+        reload: true
+      }
+    }, 'https://giscus.app')
+  }
+}
 
 // 组件卸载时清理
 onUnmounted(() => {
@@ -163,6 +208,12 @@ onUnmounted(() => {
   // 清理媒体查询监听器
   if (import.meta.client && mediaQuery && updateTheme) {
     mediaQuery.removeEventListener('change', updateTheme)
+  }
+  
+  // 清理刷新定时器
+  if (refreshInterval.value) {
+    clearInterval(refreshInterval.value)
+    refreshInterval.value = null
   }
 })
 
@@ -192,6 +243,18 @@ watch(isDark, () => {
       updateGiscusTheme()
     })
   }
+})
+
+// 添加一个全局方法，用于手动刷新评论
+const refreshComments = () => {
+  if (showComments.value) {
+    refreshGiscus()
+  }
+}
+
+// 暴露给父组件
+defineExpose({
+  refreshComments
 })
 
 // 初始化时如果评论区域是打开状态，则加载

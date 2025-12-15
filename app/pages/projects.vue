@@ -110,18 +110,18 @@ interface Project {
 // 项目数据
 const projects: Project[] = [
   {
-    title: 'Fumomo',
-    description: '基于 Astro 构建的个人主页，温暖而现代的设计风格(暂未开源)',
-    demoUrl: 'https://fumofumo.vercel.app',
-    githubUrl: 'https://github.com/Hakutyan-bai/fumomo',
-    demoText: '预览项目'
+    title: 'Nuxt-blog-v3',
+    description: '纸鹿基于Nuxt4的博客魔改自用',
+    demoUrl: 'https://blog.mcyzsx.top',
+    githubUrl: 'https://github.com/zsxcoder/nuxt-blog-v3',
+    demoText: '点击前往'
   },
   {
-    title: 'Fumomo-Nuxt',
-    description: '从 Astro 迁移到 Nuxt 的个人主页，温暖而现代的设计风格(暂未开源)',
-    demoUrl: 'https://fumomo-nuxt.vercel.app',
-    githubUrl: 'https://github.com/Hakutyan-bai/fumomo-nuxt',
-    demoText: '预览项目'
+    title: 'Fumomo-Nuxt-zsx',
+    description: '基于Nuxt的个人主页Fumomo魔改自用',
+    demoUrl: 'https://homr.mcyzsx.top',
+    githubUrl: 'https://github.com/zsxcoder/fumomo-nuxt',
+    demoText: '点击前往'
   },
   {
     title: 'file-sharing-site',
