@@ -243,6 +243,16 @@ const currentPage = 'guestbook'
     box-shadow: 0 2px 12px rgba(0, 0, 0, 0.2) !important; /* 深色模式下的阴影效果 */
 }
 
+/* 确保Giscus组件容器内的元素也能正确响应主题变化 */
+.giscus-container :deep(.giscus-container) {
+    background: transparent !important;
+    transition: background-color 0.3s ease;
+}
+
+.dark .giscus-container :deep(.giscus-container) {
+    background: transparent !important;
+}
+
 /* 响应式调整 */
 @media (max-width: 768px) {
   .welcome-card {

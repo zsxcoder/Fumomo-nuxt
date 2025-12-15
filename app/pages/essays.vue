@@ -263,10 +263,10 @@ async function fetchUserProfile() {
 }
 
 // 获取动态列表
-async function fetchEssays() {
-    // 如果距离上次获取时间小于30分钟，则使用缓存
+async function fetchEssays(forceRefresh = false) {
+    // 如果距离上次获取时间小于5分钟且不强制刷新，则使用缓存
     const now = Date.now();
-    if (now - essaysState.value.lastFetchTime < 30 * 60 * 1000) {
+    if (!forceRefresh && now - essaysState.value.lastFetchTime < 5 * 60 * 1000) {
         return;
     }
 
@@ -340,9 +340,9 @@ onMounted(() => {
     // 加载外部脚本
     loadExternalScripts();
     
-    // 获取数据
+    // 获取数据，强制刷新随笔列表以获取最新内容
     fetchUserProfile();
-    fetchEssays();
+    fetchEssays(true); // 传递 true 强制刷新
     
     // 添加事件监听器
     if (import.meta.client) {
@@ -478,6 +478,13 @@ function getEssaySummary(item: any): string {
                                 <div v-if="essays.length > 0" class="stat-value">
                                     {{ essays[0].tags.length }}
                                 </div>
+                            </div>
+                        </div>
+                        <div class="stat-card refresh-card" @click="fetchEssays(true)">
+                            <i class="fas fa-sync-alt stat-icon text-primary" :class="{ 'fa-spin': essaysState.loading }"></i>
+                            <div class="stat-info">
+                                <div class="stat-label">刷新</div>
+                                <div class="stat-value">随笔</div>
                             </div>
                         </div>
                     </div>
@@ -1163,6 +1170,16 @@ function getEssaySummary(item: any): string {
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 }
 
+/* 确保Giscus组件容器内的元素也能正确响应主题变化 */
+.essay-comments :deep(.giscus-container) {
+    background: transparent !important;
+    transition: background-color 0.3s ease;
+}
+
+.dark .essay-comments :deep(.giscus-container) {
+    background: transparent !important;
+}
+
 .essay-tags {
     display: flex;
     gap: 4px;
@@ -1258,6 +1275,17 @@ function getEssaySummary(item: any): string {
     color: #d1d5db;
 }
 
+/* 刷新卡片样式 */
+.refresh-card {
+    cursor: pointer;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.refresh-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(139, 90, 140, 0.15);
+}
+
 /* 统计卡片深色模式 */
 .dark .stat-card {
     background: rgba(31, 41, 55, 0.8);
@@ -1266,6 +1294,10 @@ function getEssaySummary(item: any): string {
 
 .dark .stat-icon {
     color: #a974a9;
+}
+
+.dark .refresh-card:hover {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
 }
 
 .dark .stat-info .stat-label {
