@@ -119,16 +119,16 @@ const projects: Project[] = [
   {
     title: 'Fumomo-Nuxt-zsx',
     description: '基于Nuxt的个人主页Fumomo魔改自用',
-    demoUrl: 'https://homr.mcyzsx.top',
+    demoUrl: 'https://home.mcyzsx.top',
     githubUrl: 'https://github.com/zsxcoder/fumomo-nuxt',
     demoText: '点击前往'
   },
   {
-    title: 'file-sharing-site',
-    description: '一个外链文件分享站，支持文件变动通知',
-    demoUrl: '#',
-    githubUrl: 'https://github.com/Hakutyan-bai/file-sharing-site',
-    demoText: '暂无预览'
+    title: 'astro-ryuchan',
+    description: '基于Astro的ryuchan主题魔改自用',
+    demoUrl: 'https://boke.zsx815.top',
+    githubUrl: 'https://github.com/zsxcoder/RyuChan',
+    demoText: '点击前往'
   },
   {
     title: 'AutoFeedMod',
@@ -138,12 +138,26 @@ const projects: Project[] = [
     demoText: '下载地址'
   },
   {
-    title: '示例项目',
-    description: '一个示例项目的描述',
-    demoUrl: '#',
-    githubUrl: '#',
-    demoText: '暂无预览'
-  }
+    title: 'check-flink',
+    description: '柳神的友链检测工具自用',
+    demoUrl: 'https://check-flink.mcyzsx.top',
+    githubUrl: 'https://github.com/zsxcoder/check-flink',
+    demoText: '点击前往'
+    },
+  {
+    title: 'Friend-Circle-Lite',
+    description: '柳神的友链朋友圈自用',
+    demoUrl: 'https://fc.mcyzsx.top',
+    githubUrl: 'https://github.com/zsxcoder/Friend-Circle-Lite',
+    demoText: '点击前往'
+    },
+    {
+    title: 'Cloudflare-Memos',
+    description: '基于Cloudflare Workers的Memos自用',
+    demoUrl: 'https://memos.mcyzsx.top',
+    githubUrl: 'https://github.com/mcyzsx/Cloudflare-Memos',
+    demoText: '点击前往'
+    },
 ]
 
 // 计算分页数据

@@ -418,21 +418,6 @@ const handleCommentClick = (index: number, content: string) => {
     referencedEssay.value = { index, content };
     scrollToComments();
 };
-
-// 格式化时间显示：24小时以内显示相对时间，超过24小时显示具体时间
-function formatDisplayTime(dateString: string) {
-    const date = dayjs(dateString);
-    const now = dayjs();
-    const hoursDiff = now.diff(date, 'hour');
-    
-    if (hoursDiff < 24) {
-        // 24小时以内显示相对时间
-        return date.locale('zh-cn').fromNow().replaceAll(/\s+/g, '');
-    } else {
-        // 超过24小时显示具体时间
-        return date.format('YYYY年MM月DD日 HH:mm:ss');
-    }
-}
 </script>
 
 <template>
@@ -494,7 +479,7 @@ function formatDisplayTime(dateString: string) {
                                     <span class="bio">{{ user?.slogan || '这个人很懒，什么都没留下' }}</span>
                                 </div>
                                 <span v-if="essays.length > 0" class="bio">
-                                    更新时间：{{ formatDisplayTime(essays[0].date) }}
+                                    更新时间：{{ dayjs(essays[0].date).locale('zh-cn').fromNow().replaceAll(/\s+/g, '') }}
                                 </span>
                             </div>
                         </div>
@@ -541,7 +526,7 @@ function formatDisplayTime(dateString: string) {
                                         <i class="fas fa-check-circle verified"></i>
                                     </div>
                                     <div class="essay-date">
-                                        {{ formatDisplayTime(item.date) }}
+                                        {{ dayjs(item.date).locale('zh-cn').fromNow().replaceAll(/\s+/g, '') }}
                                     </div>
                                 </div>
                             </div>
@@ -692,17 +677,6 @@ function formatDisplayTime(dateString: string) {
                                 </div>
                             </div>
 
-                            <!-- 评论按钮 -->
-                            <div class="essay-comment-section">
-                                <button 
-                                    class="comment-button"
-                                    @click="handleCommentClick(index, getEssaySummary(item))"
-                                >
-                                    <i class="fas fa-comments"></i>
-                                    评论
-                                </button>
-                            </div>
-
                             <!-- 底部区域 -->
                             <div class="essay-bottom">
                                 <div class="essay-tags">
@@ -719,6 +693,15 @@ function formatDisplayTime(dateString: string) {
                                         {{ item.location }}
                                     </span>
                                 </div>
+                                
+                                <!-- 评论按钮 -->
+                                <button 
+                                    class="comment-button"
+                                    @click="handleCommentClick(index, getEssaySummary(item))"
+                                >
+                                    <i class="fas fa-comments"></i>
+                                    评论
+                                </button>
                             </div>
                         </div>
 
@@ -1214,24 +1197,20 @@ function formatDisplayTime(dateString: string) {
     color: #999;
 }
 
-/* 评论区域 */
-.essay-comment-section {
-    margin-top: 0.5rem;
-}
-
 .comment-button {
     display: flex;
     align-items: center;
     gap: 0.5rem;
-    padding: 0.5rem 1rem;
+    padding: 0.4rem 0.8rem;
     background: rgba(139, 90, 140, 0.1);
     border: 1px solid rgba(139, 90, 140, 0.2);
     border-radius: 8px;
     color: #8b5a8c;
-    font-size: 0.9rem;
+    font-size: 0.85rem;
     cursor: pointer;
     transition: all 0.2s ease;
     font-family: 'Comic Sans MS', 'XiaokeNailao', cursive, sans-serif;
+    white-space: nowrap;
 }
 
 .comment-button:hover {
