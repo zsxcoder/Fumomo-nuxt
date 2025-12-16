@@ -268,6 +268,113 @@ function showToast(message: string) {
         $toast(message);
     }
 }
+
+// 友链状态管理
+const friendStatuses = ref<Record<string, { latency: number; status: string }>>({});
+
+// 获取友链状态
+async function fetchFriendStatuses() {
+    // 确保在客户端执行
+    if (!import.meta.client) return;
+    
+    try {
+        const cacheKey = "friendStatusesData";
+        const cacheExpirationTime = 30 * 60 * 1000; // 半小时
+        
+        // 尝试从缓存获取
+        const cachedData = localStorage.getItem(cacheKey);
+        if (cachedData) {
+            const { data, timestamp } = JSON.parse(cachedData);
+            if (Date.now() - timestamp < cacheExpirationTime) {
+                friendStatuses.value = data;
+                console.log('Using cached friend statuses:', data);
+                return;
+            }
+        }
+        
+        // 从API获取最新数据
+        console.log('Fetching friend statuses from API...');
+        const response = await fetch('https://check-flink.mcyzsx.top/result.json');
+        if (response.ok) {
+            const data = await response.json();
+            console.log('Received API data:', data);
+            
+            const statuses: Record<string, { latency: number; status: string }> = {};
+            
+            if (data.link_status) {
+                data.link_status.forEach((item: { link: string; latency: number }) => {
+                    const normalizedLink = item.link.replace(/\/$/, '');
+                    statuses[normalizedLink] = {
+                        latency: item.latency,
+                        status: getStatusFromLatency(item.latency)
+                    };
+                });
+            }
+            
+            // 使用nextTick确保在数据更新后DOM也会更新
+            await nextTick();
+            friendStatuses.value = statuses;
+            await nextTick();
+            console.log('Processed friend statuses:', statuses);
+            
+            // 缓存数据
+            const cacheData = {
+                data: statuses,
+                timestamp: Date.now()
+            };
+            localStorage.setItem(cacheKey, JSON.stringify(cacheData));
+        } else {
+            console.error('API response not ok:', response.status);
+        }
+    } catch (error) {
+        console.error('获取友链状态失败:', error);
+    }
+}
+
+// 在组件挂载后获取友链状态
+onMounted(() => {
+    // 使用setTimeout确保在DOM完全渲染后再获取状态
+    setTimeout(() => {
+        fetchFriendStatuses();
+    }, 100);
+});
+
+// 根据延迟时间获取状态
+function getStatusFromLatency(latency: number): string {
+    if (latency === -1) return 'error';
+    if (latency <= 2) return 'success';
+    if (latency <= 5) return 'warning-light';
+    if (latency <= 10) return 'warning-heavy';
+    return 'error';
+}
+
+// 获取状态对应的CSS类
+function getStatusClass(latency: number): string {
+    const status = getStatusFromLatency(latency);
+    switch (status) {
+        case 'success':
+            return 'status-tag-green';
+        case 'warning-light':
+            return 'status-tag-light-yellow';
+        case 'warning-heavy':
+            return 'status-tag-dark-yellow';
+        case 'error':
+        default:
+            return 'status-tag-red';
+    }
+}
+
+// 格式化延迟时间显示
+function formatLatency(latency: number): string {
+    if (latency === -1) return '未知';
+    return `${latency.toFixed(2)}s`;
+}
+
+// 获取友链状态
+function getFriendStatus(friendUrl: string) {
+    const normalizedUrl = friendUrl.replace(/\/$/, '');
+    return friendStatuses.value[normalizedUrl];
+}
 </script>
 
 <template>
@@ -336,14 +443,25 @@ function showToast(message: string) {
                 </p>
 
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <a
+                    <div
                         v-for="friend in displayedFriends"
                         :key="friend.title"
-                        :href="friend.url"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        class="bg-gradient-to-br from-gray-50 dark:from-gray-800/50 to-pink-50 dark:to-purple-900/20 rounded-2xl p-6 border border-gray-200 dark:border-gray-700 transition-all duration-200 hover:-translate-y-0.5 cursor-pointer no-underline text-inherit hover:shadow-lg flex flex-col md:flex-row gap-2 items-center md:items-start justify-center md:justify-between"
+                        class="friend-card relative bg-gradient-to-br from-gray-50 dark:from-gray-800/50 to-pink-50 dark:to-purple-900/20 rounded-2xl p-6 border border-gray-200 dark:border-gray-700 transition-all duration-200 hover:-translate-y-0.5 cursor-pointer no-underline text-inherit hover:shadow-lg flex flex-col md:flex-row gap-2 items-center md:items-start justify-center md:justify-between"
                     >
+                        <!-- 状态标签 -->
+                        <div 
+                            v-if="getFriendStatus(friend.url)" 
+                            :class="['status-tag', getStatusClass(getFriendStatus(friend.url).latency)]"
+                        >
+                            {{ formatLatency(getFriendStatus(friend.url).latency) }}
+                        </div>
+                        
+                        <a
+                            :href="friend.url"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            class="w-full flex flex-col md:flex-row gap-2 items-center md:items-start justify-center md:justify-between no-underline text-inherit"
+                        >
                         <div class="flex items-center">
                             <img :src="friend.avatar" alt="Friend Avatar" class="w-16 h-16 rounded-full" />
                             <div class="flex flex-col items-start ml-2">
@@ -352,7 +470,8 @@ function showToast(message: string) {
                                 <div class="mt-3 text-sm text-primary dark:text-primary-light opacity-75">点击前往 -></div>
                             </div>
                         </div>
-                    </a>
+                        </a>
+                    </div>
                 </div>
             </section>
 
@@ -1078,6 +1197,44 @@ function showToast(message: string) {
 .dark .apply-form {
     background: rgba(31, 41, 55, 0.95);
     border-color: rgba(139, 90, 140, 0.3);
+}
+
+/* 友链状态标签样式 */
+.status-tag {
+    position: absolute;
+    top: 0;
+    left: 0;
+    padding: 3px 8px;
+    border-radius: 12px 0px 12px 0px;
+    font-size: 12px;
+    color: white;
+    font-weight: bold;
+    transition: font-size 0.3s ease-out, width 0.3s ease-out, opacity 0.3s ease-out;
+    z-index: 10;
+}
+
+.friend-card:hover .status-tag {
+    font-size: 0px;
+    opacity: 0;
+}
+
+/* 状态标签颜色 */
+.status-tag-green {
+    background-color: #005E00; /* 绿色 */
+}
+
+.status-tag-light-yellow {
+    background-color: #FED101; /* 浅黄色 */
+    color: #333; /* 浅黄色背景使用深色文字 */
+}
+
+.status-tag-dark-yellow {
+    background-color: #F0B606; /* 深黄色 */
+    color: #333; /* 黄色背景使用深色文字 */
+}
+
+.status-tag-red {
+    background-color: #B90000; /* 红色 */
 }
 
 .dark .apply-form h2 {

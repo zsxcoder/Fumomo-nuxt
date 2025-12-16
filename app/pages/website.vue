@@ -226,6 +226,13 @@ const websites: Website[] = [
     description: '部署在cloudflare的图床',
     url: 'https://imgbed.mcyzsx.top',
     linkText: '点击查看 →'
+    },
+  {
+    title: 'ZSX-Music',
+    description: '基于Meting的音乐播放器自用',
+
+    url: 'https://music.zsx815.top',
+    linkText: '点击查看 →'
   },
   {
     title: '友链检测',
