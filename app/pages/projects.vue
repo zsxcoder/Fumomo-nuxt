@@ -158,6 +158,13 @@ const projects: Project[] = [
     githubUrl: 'https://github.com/mcyzsx/Cloudflare-Memos',
     demoText: '点击前往'
     },
+    {
+    title: 'Cloudflare-Momemos',
+    description: '基于Cloudflare Workers的Moments自用',
+    demoUrl: 'https://moment.mcyzsx.top',
+    githubUrl: 'https://github.com/zsxcoder/moments-cloudflare',
+    demoText: '点击前往'
+    }
 ]
 
 // 计算分页数据

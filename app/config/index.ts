@@ -234,8 +234,8 @@ export const siteConfig = {
     // ========================================
     umami: {
         enable: true, // 是否显示umami统计
-        apiKey: "api_NqmrT65HsrwXosO7VqPCXXQPvWr6DclQ", // Umami Cloud V3 API 密钥，从 https://cloud.umami.is 获取
-        websiteId: "ac5e0626-4863-41ec-8a66-98ba076846a0", // 网站ID，从 Umami Cloud 获取
+        apiKey: "api_WCmwNsUqM4zdWI9kzI9p2P9l3WhuDmE6", // Umami Cloud V3 API 密钥，从 https://cloud.umami.is 获取
+        websiteId: "f6bdf55b-75cd-4cf5-8bb8-f83304c98381", // 网站ID，从 Umami Cloud 获取
         apiEndpoint: "https://api.umami.is", // Umami Cloud API 地址
     },
 };

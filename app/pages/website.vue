@@ -256,6 +256,12 @@ const websites: Website[] = [
     description: '基于Cloudflare的相册自用',
     url: 'https://gallery.mcyzsx.top/',
     linkText: '点击查看 →'
+    },
+  {
+    title: 'umami',
+    description: '基于vercel的umami自用',
+    url: 'https://umami.mcyzsx.top/',
+    linkText: '点击查看 →'
   },
 //   {
 //     title: '示例网站 6',
