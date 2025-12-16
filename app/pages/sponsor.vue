@@ -88,7 +88,7 @@
               </div>
               <h3>爱发电支持</h3>
               <div class="qr-placeholder">
-                <img src="https://cdn.fis.ink/img/2025/02/11/67aad655d87f6.png" alt="爱发电二维码">
+                <img src="https://imgbed.mcyzsx.top/file/custom/Vuaj4DpO.jpg" alt="爱发电二维码">
               </div>
               <p class="qr-description">在爱发电上支持我</p>
               <div class="qr-actions">
