@@ -218,7 +218,7 @@ const startScatterAnimation = () => {
 
         <!-- 社交媒体图标链接 -->
         <div 
-          class="flex justify-center gap-6 mt-12 opacity-0 content"
+          class="flex flex-wrap justify-center gap-4 sm:gap-6 mt-12 opacity-0 content"
           ref="socialRef"
           style="transform: translateY(3rem);"
         >
@@ -231,15 +231,15 @@ const startScatterAnimation = () => {
             class="group relative flex flex-col items-center text-decoration-none"
           >
             <div 
-              class="w-14 h-14 rounded-full flex items-center justify-center transition-all duration-300 hover:scale-110 bg-white/70 dark:bg-gray-800/70 shadow-md hover:shadow-lg"
+              class="w-12 h-12 sm:w-14 sm:h-14 rounded-full flex items-center justify-center transition-all duration-300 hover:scale-110 bg-white/70 dark:bg-gray-800/70 shadow-md hover:shadow-lg"
               :style="`box-shadow: 0 4px 15px rgba(139, 90, 140, 0.1);`"
             >
               <i 
-                :class="social.icon + ' text-2xl transition-colors duration-300 group-hover:text-primary'"
+                :class="social.icon + ' text-xl sm:text-2xl transition-colors duration-300 group-hover:text-primary'"
                 :style="`color: ${social.color};`"
               ></i>
             </div>
-            <span class="text-xs mt-2 text-muted dark:text-gray-300 transition-colors duration-300 group-hover:text-primary">
+            <span class="text-xs mt-1 sm:mt-2 text-muted dark:text-gray-300 transition-colors duration-300 group-hover:text-primary">
               {{ social.name }}
             </span>
           </a>
