@@ -730,11 +730,12 @@ const handleCommentClick = (index: number, content: string) => {
                             </div>
                         </div>
                         
-                        <GiscusComments 
-                            essay-id="essays-page-comments"
-                            :essay-content="referencedEssay?.content || ''"
-                            :default-show="true"
-                        />
+                        <GiscusComments
+  essay-id="essays-page-comments"
+  :essay-content="referencedEssay?.content || ''"
+  :theme="isDark ? 'transparent_dark' : 'light'"
+  :default-show="true"
+/>
                     </div>
                 </div>
             </section>

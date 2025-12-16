@@ -206,7 +206,7 @@ const websites: Website[] = [
   {
     title: 'ZSXの主页',
     description: '基于fumomo的主页自用',
-    url: 'https://home.mcyzsx.top/',
+    url: 'https://home.mcyzsx.top',
     linkText: '点击查看 →'
   },
   {
@@ -224,13 +224,13 @@ const websites: Website[] = [
   {
     title: 'Cloudflare-imgbed',
     description: '部署在cloudflare的图床',
-    url: 'https://imgbed.mcyzsx.top/',
+    url: 'https://imgbed.mcyzsx.top',
     linkText: '点击查看 →'
   },
   {
     title: '友链检测',
     description: '柳神的友链检测网站自用',
-    url: 'https://check-flink.mcyzsx.top/',
+    url: 'https://check-flink.mcyzsx.top',
     linkText: '点击查看 →'
   },
   {
@@ -242,25 +242,25 @@ const websites: Website[] = [
   {
     title: 'memos-cloudflare',
     description: '基于Cloudflare的memos自用',
-    url: 'https://memos.mcyzsx.top/',
+    url: 'https://memos.mcyzsx.top',
     linkText: '点击查看 →'
   },
   {
     title: 'Moment-Cloudflare',
     description: '基于Cloudflare的Moment自用',
-    url: 'https://moment.mcyzsx.top/',
+    url: 'https://moment.mcyzsx.top',
     linkText: '点击查看 →'
   },
   {
     title: 'cfalbums',
     description: '基于Cloudflare的相册自用',
-    url: 'https://gallery.mcyzsx.top/',
+    url: 'https://gallery.mcyzsx.top',
     linkText: '点击查看 →'
     },
   {
     title: 'umami',
     description: '基于vercel的umami自用',
-    url: 'https://umami.mcyzsx.top/',
+    url: 'https://umami.mcyzsx.top',
     linkText: '点击查看 →'
   },
 //   {

@@ -13,6 +13,8 @@ definePageMeta({
 const logoRef = ref<HTMLElement>()
 const subtitleRef = ref<HTMLElement>()
 const contentRef = ref<HTMLElement>()
+const socialRef = ref<HTMLElement>()
+const moreButtonRef = ref<HTMLElement>()
 const mainRef = ref<HTMLElement>()
 
 // 分散动画状态
@@ -21,6 +23,52 @@ const scatterProgress = ref(0)
 
 // 移动端检测
 const isMobile = ref(false)
+
+// 社交媒体链接
+const socialLinks = [
+  {
+    name: 'GitHub',
+    icon: 'fab fa-github',
+    url: siteConfig.personal.social.github,
+    color: '#93FB0B'
+  },
+  {
+    name: '邮箱',
+    icon: 'fas fa-envelope',
+    url: `mailto:${siteConfig.personal.social.email}`,
+    color: '#ea4335'
+  },
+  {
+    name: '博客',
+    icon: 'fas fa-blog',
+    url: siteConfig.personal.blog.url,
+    color: '#ff6b35'
+    },
+  {
+    name: 'QQ',
+    icon: 'fab fa-qq',
+    url: `https://qm.qq.com/q/Ha1GZQtMgE`,
+    color: '#5DE2E7'
+    },
+  {
+    name: 'Telegram',
+    icon: 'fab fa-telegram',
+    url: `https://t.me/Kemiaojun`,
+    color: '#FE9900'
+    },
+    {
+    name: 'Bilibili',
+    icon: 'fab fa-bilibili',
+    url: `https://t.me/Kemiaojun`,
+    color: '#FE9900'
+    },
+    {
+    name: 'X',
+    icon: 'fab fa-twitter',
+    url: `https://x.com/kemiao`,
+    color: '#0324FF'
+  }
+]
 
 // 路由导航
 const router = useRouter()
@@ -61,6 +109,14 @@ onMounted(() => {
   setTimeout(() => {
     if (contentRef.value) contentRef.value.classList.add('fade-in-delayed')
   }, 800)
+  
+  setTimeout(() => {
+    if (socialRef.value) socialRef.value.classList.add('fade-in-delayed')
+  }, 1100)
+  
+  setTimeout(() => {
+    if (moreButtonRef.value) moreButtonRef.value.classList.add('fade-in-delayed')
+  }, 1700)
 })
 
 // 绑定滚轮事件（仅在非移动端、客户端且配置启用时）
@@ -98,6 +154,19 @@ const startScatterAnimation = () => {
         card.classList.add(`scatter-card-${index % 3}`)
       }, index * 100)
     })
+  }
+  
+  if (socialRef.value) {
+    const socialIcons = socialRef.value.querySelectorAll('a')
+    socialIcons.forEach((icon, index) => {
+      setTimeout(() => {
+        icon.classList.add(`scatter-social-${index % 2}`)
+      }, index * 100)
+    })
+  }
+  
+  if (moreButtonRef.value) {
+    moreButtonRef.value.classList.add('scatter-center')
   }
 
   // 1.5秒后导航到文章页
@@ -146,6 +215,46 @@ const startScatterAnimation = () => {
             <p class="text-muted dark:text-gray-300 leading-relaxed">{{ feature.description }}</p>
           </div>
         </div>
+
+        <!-- 社交媒体图标链接 -->
+        <div 
+          class="flex justify-center gap-6 mt-12 opacity-0 content"
+          ref="socialRef"
+          style="transform: translateY(3rem);"
+        >
+          <a 
+            v-for="social in socialLinks" 
+            :key="social.name"
+            :href="social.url"
+            target="_blank"
+            rel="noopener noreferrer"
+            class="group relative flex flex-col items-center text-decoration-none"
+          >
+            <div 
+              class="w-14 h-14 rounded-full flex items-center justify-center transition-all duration-300 hover:scale-110 bg-white/70 dark:bg-gray-800/70 shadow-md hover:shadow-lg"
+              :style="`box-shadow: 0 4px 15px rgba(139, 90, 140, 0.1);`"
+            >
+              <i 
+                :class="social.icon + ' text-2xl transition-colors duration-300 group-hover:text-primary'"
+                :style="`color: ${social.color};`"
+              ></i>
+            </div>
+            <span class="text-xs mt-2 text-muted dark:text-gray-300 transition-colors duration-300 group-hover:text-primary">
+              {{ social.name }}
+            </span>
+          </a>
+        </div>
+
+        <!-- 前往更多按钮 -->
+        <div class="flex justify-center mt-8 opacity-0 more-button" ref="moreButtonRef" style="transform: translateY(3rem);">
+          <button 
+            @click="router.push('/website')"
+            class="px-6 py-3 bg-primary/10 dark:bg-primary/20 hover:bg-primary/20 dark:hover:bg-primary/30 text-primary dark:text-primary-light rounded-full transition-all duration-300 hover:scale-105 font-medium flex items-center gap-2 shadow-md hover:shadow-lg"
+          >
+            <span>前往更多</span>
+            <i class="fas fa-arrow-right"></i>
+          </button>
+        </div>
       </div>
 
       <!-- 滚动提示 -->
@@ -181,6 +290,14 @@ const startScatterAnimation = () => {
 }
 
 .scatter-card-2 {
+  animation: scatterRight 1.5s ease-in-out forwards;
+}
+
+.scatter-social-0 {
+  animation: scatterLeft 1.5s ease-in-out forwards;
+}
+
+.scatter-social-1 {
   animation: scatterRight 1.5s ease-in-out forwards;
 }
 
@@ -242,5 +359,10 @@ const startScatterAnimation = () => {
 /* 为组件添加过渡效果 */
 .feature-card {
   transition: all 0.3s ease;
+}
+
+/* 按钮淡入动画 */
+.more-button.fade-in-delayed {
+  animation: fadeInUp 0.8s ease-out forwards;
 }
 </style>
