@@ -36,7 +36,7 @@ useHead({
     { property: 'twitter:description', content: props.description }
   ],
   link: [
-    { rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' },
+    { rel: 'icon', type: 'image/x-icon', href: 'https://imgbed.mcyzsx.top/file/avatar/1765626136745_zsxcoder.jpg' },
     { rel: 'stylesheet', href: 'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css' }
   ],
   // Analytics - Umami

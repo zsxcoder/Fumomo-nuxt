@@ -465,7 +465,7 @@ const handleCommentClick = (index: number, content: string) => {
                         <div class="header">
                             <img
                                 class="avatar"
-                                :src="user?.avatarUrl || '/favicon.ico'"
+                                :src="user?.avatarUrl || 'https://imgbed.mcyzsx.top/file/avatar/1765626136745_zsxcoder.jpg'"
                                 :alt="user?.nickname || '用户头像'"
                             >
                             <div class="info">
