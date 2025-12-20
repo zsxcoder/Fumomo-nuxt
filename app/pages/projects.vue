@@ -112,14 +112,14 @@ const projects: Project[] = [
   {
     title: 'Nuxt-blog-v3',
     description: '纸鹿基于Nuxt4的博客魔改自用',
-    demoUrl: 'https://blog.mcyzsx.top',
+    demoUrl: 'https://blog.zsxcoder.top',
     githubUrl: 'https://github.com/zsxcoder/nuxt-blog-v3',
     demoText: '点击前往'
   },
   {
     title: 'Fumomo-Nuxt-zsx',
     description: '基于Nuxt的个人主页Fumomo魔改自用',
-    demoUrl: 'https://home.zxcoder.top',
+    demoUrl: 'https://blog.zsxcoder.top',
     githubUrl: 'https://github.com/zsxcoder/fumomo-nuxt',
     demoText: '点击前往'
   },

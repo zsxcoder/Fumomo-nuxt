@@ -206,7 +206,7 @@ const websites: Website[] = [
   {
     title: 'ZSXの主页',
     description: '基于fumomo的主页自用',
-    url: 'https://home.zxcoder.top',
+    url: 'https://blog.zsxcoder.top',
     linkText: '点击查看 →'
   },
   {
@@ -218,7 +218,7 @@ const websites: Website[] = [
   {
     title: '个人博客2',
     description: '基于纸鹿大佬的博客自用',
-    url: 'https://blog.mcyzsx.top',
+    url: 'https://blog.zsxcoder.top',
     linkText: '查看站点状态 →'
   },
   {

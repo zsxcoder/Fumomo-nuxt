@@ -168,7 +168,7 @@ async function main() {
   console.log('正在测试RSS/Atom解析功能...\n')
   
   // 测试Atom源
-  await testLiveRSSSource('https://blog.mcyzsx.top/atom.xml', 'atom')
+  await testLiveRSSSource('https://blog.zsxcoder.top/atom.xml', 'atom')
   
   // 测试RSS源
   await testLiveRSSSource('https://blog.sakura.ink/rss.xml', 'rss')

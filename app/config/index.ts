@@ -29,7 +29,7 @@ export const siteConfig = {
         description: "欢迎来到ZSXの主页，在这里分享技术、生活和资源。",
 
         // 网站URL - 完整的域名地址
-        url: "https://home.zxcoder.top",
+        url: "https://blog.zsxcoder.top",
     },
 
     // ========================================
@@ -148,7 +148,7 @@ export const siteConfig = {
             email: "me@mcyzsx.top",
         },
         blog: {
-            url: "https://blog.mcyzsx.top",
+            url: "https://blog.zsxcoder.top",
         },
     },
 

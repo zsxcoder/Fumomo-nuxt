@@ -14,7 +14,7 @@ const myFeed = {
     author: "钟神秀",
     title: "ZSXの主页",
     desc: "每一段旅程，都有终点~",
-    link: "https://blog.mcyzsx.top",
+    link: "https://blog.zsxcoder.top",
     avatar: "https://cdn.jsdelivr.net/gh/zsxcoder/picx-images-hosting@master/avatar/zsxcoder.webp"
 }
 

@@ -16,7 +16,7 @@ const __dirname = path.dirname(__filename)
 const rssSources = {
   '1': {
     name: 'ZSXの小站 (Atom)',
-    url: 'https://blog.mcyzsx.top/atom.xml',
+    url: 'https://blog.zsxcoder.top/atom.xml',
     description: 'ZSX个人博客的Atom订阅源，包含15篇文章'
   },
   '2': {

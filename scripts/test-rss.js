@@ -9,7 +9,7 @@ import { XMLParser } from 'fast-xml-parser'
 
 // 测试RSS源列表
 const rssSources = [
-  'https://blog.mcyzsx.top/atom.xml',
+  'https://blog.zsxcoder.top/atom.xml',
   'https://blog.sakura.ink/rss.xml',
   'https://boke.zsx815.top/rss.xml',
 ]
