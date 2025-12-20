@@ -206,7 +206,7 @@ const websites: Website[] = [
   {
     title: 'ZSXの主页',
     description: '基于fumomo的主页自用',
-    url: 'https://home.mcyzsx.top',
+    url: 'https://home.zxcoder.top',
     linkText: '点击查看 →'
   },
   {
