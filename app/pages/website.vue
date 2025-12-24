@@ -206,7 +206,7 @@ const websites: Website[] = [
   {
     title: 'ZSXの主页',
     description: '基于fumomo的主页自用',
-    url: 'https://blog.zsxcoder.top',
+    url: 'https://home.mcyzsx.top',
     linkText: '点击查看 →'
   },
   {
@@ -219,7 +219,55 @@ const websites: Website[] = [
     title: '个人博客2',
     description: '基于纸鹿大佬的博客自用',
     url: 'https://blog.zsxcoder.top',
-    linkText: '查看站点状态 →'
+    linkText: '点击查看 →'
+    },
+  {
+    title: '个人博客3',
+    description: 'wallleap的etheral主题自用',
+    url: 'https://myblog.zsxcoder.top',
+    linkText: '点击查看 →'
+    },
+  {
+    title: 'Mastodon-vercel',
+    description: '基于vercel的Mastodon前端自用',
+    url: 'https://m.mcyzsx.top',
+    linkText: '点击查看 →'
+    },
+  {
+    title: 'Mastodon-vercel',
+    description: '基于vercel的Mastodon前端自用',
+    url: 'https://m.mcyzsx.top',
+    linkText: '点击查看 →'
+    },
+  {
+    title: 'Notion-vercel',
+    description: '基于vercel的Notion说说前端自用',
+    url: 'https://talk.zsxcoder.top',
+    linkText: '点击查看 →'
+    },
+  {
+    title: 'Github说说',
+    description: '基于cloud flare的说说',
+    url: 'https://moment.zsxcoder.top',
+    linkText: '点击查看 →'
+    },
+  {
+    title: 'Tg-Memos',
+    description: '面条大佬的电报微博客自用',
+    url: 'https://tg.mcyzsx.top',
+    linkText: '点击查看 →'
+    },
+  {
+    title: 'NodeCrypt',
+    description: '即时私密聊天',
+    url: 'https://chat.mcyzsx.top/',
+    linkText: '点击查看 →'
+    },
+  {
+    title: 'Links-app',
+    description: '基于cloudflare的友链申请',
+    url: 'https://link.314926.xyz',
+    linkText: '点击查看 →'
   },
   {
     title: 'Cloudflare-imgbed',
@@ -258,12 +306,6 @@ const websites: Website[] = [
     url: 'https://moment.mcyzsx.top',
     linkText: '点击查看 →'
   },
-  {
-    title: 'cfalbums',
-    description: '基于Cloudflare的相册自用',
-    url: 'https://gallery.mcyzsx.top',
-    linkText: '点击查看 →'
-    },
   {
     title: 'umami',
     description: '基于vercel的umami自用',

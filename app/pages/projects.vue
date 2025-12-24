@@ -184,7 +184,7 @@ const displayedProjects = computed((): Project[] => {
       title: '💡 更多项目',
       description: '敬请期待更多精彩的项目作品',
       demoUrl: '#',
-      githubUrl: '#',
+      githubUrl: 'https://github.com/zsxcoder',
       demoText: '🚧 开发中',
       isPlaceholder: true
     }]
