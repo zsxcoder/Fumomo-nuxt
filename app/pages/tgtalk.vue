@@ -4,23 +4,11 @@ import dayjs from 'dayjs';
 import relativeTime from 'dayjs/plugin/relativeTime';
 import 'dayjs/locale/zh-cn';
 import GiscusComments from '~/components/GiscusComments.vue';
-import { marked } from 'marked';
-import hljs from 'highlight.js';
-import 'highlight.js/styles/github-dark.css';
 import { Fancybox } from '@fancyapps/ui';
 import '@fancyapps/ui/dist/fancybox/fancybox.css';
 
 // 配置dayjs
 dayjs.extend(relativeTime);
-
-// 配置marked代码高亮
-marked.setOptions({
-  highlight: function(code, lang) {
-    const language = hljs.getLanguage(lang) ? lang : 'plaintext';
-    return hljs.highlight(code, { language }).value;
-  },
-  langPrefix: 'hljs language-',
-});
 
 // 页面配置
 const pageConfig = {
@@ -39,12 +27,12 @@ useHead({
         { name: 'viewport', content: 'width=device-width, initial-scale=1.0' },
         // Open Graph / Facebook
         { property: 'og:type', content: 'website' },
-        { property: 'og:url', content: `${siteConfig.site.url}/tgtalk` },
+        { property: 'og:url', content: `${siteConfig.site.url}/essays` },
         { property: 'og:title', content: `${pageConfig.title} - ${siteConfig.site.title}` },
         { property: 'og:description', content: pageConfig.description },
         // Twitter
         { property: 'twitter:card', content: 'summary_large_image' },
-        { property: 'twitter:url', content: `${siteConfig.site.url}/tgtalk` },
+        { property: 'twitter:url', content: `${siteConfig.site.url}/essays` },
         { property: 'twitter:title', content: `${pageConfig.title} - ${siteConfig.site.title}` },
         { property: 'twitter:description', content: pageConfig.description }
     ]
@@ -59,13 +47,9 @@ const atBottom = ref(false);
 // 检测是否为移动设备
 const isMobile = ref(false);
 
-// 获取颜色模式
-const colorMode = useColorMode();
-const isDark = computed(() => colorMode.value === 'dark');
-
 // API配置
 const API_CONFIG = {
-    POSTS_API: 'https://moment.20050815.xyz/api/posts',
+    MEMO_API: 'https://tg-api.mcyzsx.top/',
     PAGE_SIZE: 30,
 };
 
@@ -74,27 +58,19 @@ const DEFAULT_USER = {
     username: '钟神秀',
     nickname: '钟神秀',
     avatarUrl: 'https://imgbed.mcyzsx.top/file/avatar/1765626136745_zsxcoder.jpg',
-    slogan: '记录生活点滴，一些想法和生活'
 };
-
-// 用户信息状态
-const userState = ref({
-    loading: false,
-    error: false,
-    data: DEFAULT_USER,
-});
 
 // 动态列表状态
 const essaysState = ref({
     essays: [] as Array<{
         id: string;
-        title: string;
-        content: string;
-        renderedContent: string;
-        images: string[];
-        tags: string[];
+        content: {
+            text: string;
+            images: string[];
+        };
+        views: string | null;
         date: string;
-        updatedAt: string | null;
+        tags: string[];
         user?: {
             username: string;
             nickname: string;
@@ -107,10 +83,10 @@ const essaysState = ref({
 });
 
 // 计算属性
-const user = computed(() => userState.value.data);
 const essays = computed(() => essaysState.value.essays);
-const combinedLoading = computed(() => essaysState.value.loading || userState.value.loading);
-const combinedError = computed(() => essaysState.value.error || userState.value.error);
+const loading = computed(() => essaysState.value.loading);
+const error = computed(() => essaysState.value.error);
+const user = computed(() => DEFAULT_USER);
 
 // 处理滚轮事件
 const handleWheel = (event: WheelEvent) => {
@@ -147,15 +123,33 @@ const handleResize = () => {
     isMobile.value = window.innerWidth < 768;
 };
 
-// 提取markdown中的图片
-function extractImages(content: string): string[] {
-    const imgRegex = /!\[.*?\]\((.*?)\)/g;
-    const images: string[] = [];
-    let match;
-    while ((match = imgRegex.exec(content)) !== null) {
-        images.push(match[1]);
-    }
-    return images;
+// 格式化时间
+function formatTime(timestamp: number) {
+    const d = new Date(timestamp);
+    const ls = [d.getFullYear(), d.getMonth() + 1, d.getDate(), d.getHours(), d.getMinutes()];
+    const r = ls.map(a => (a.toString().length === 1 ? `0${a}` : a));
+    return `${r[0]}-${r[1]}-${r[2]} ${r[3]}:${r[4]}`;
+}
+
+// 格式化内容
+function formatContent(item: any) {
+    let content = item.text || '';
+
+    // 清理HTML标签中的链接文字
+    content = content.replace(/<a[^>]*>#([^<]+)<\/a>/g, '#$1');
+
+    content = content
+        .replace(/\[(.*?)\]\((.*?)\)/g, `<a class="essay_content_link" target="_blank" rel="nofollow" href="$2">@$1</a>`)
+        .replace(/- \[ \]/g, '⚪')
+        .replace(/- \[x\]/g, '⚫')
+        .replace(/\n/g, '<br>');
+
+    content = `<div class="essay_content_text">${content}</div>`;
+
+    return {
+        text: content,
+        images: item.image || [],
+    };
 }
 
 // 获取动态列表
@@ -170,36 +164,23 @@ async function fetchEssays() {
         essaysState.value.loading = true;
         essaysState.value.error = false;
 
-        const data = await $fetch<{ success: boolean; data?: any[]; count?: number }>(
-            `${API_CONFIG.POSTS_API}?size=${API_CONFIG.PAGE_SIZE}`,
-            {
-                method: 'GET',
-            }
-        );
+        const data = await $fetch<any>(API_CONFIG.MEMO_API, {
+            method: 'GET',
+        });
 
-        if (data.success && data.data) {
-            const formattedEssays = data.data.map((item: any) => {
-                const images = extractImages(item.content);
-                // 移除 markdown 中的图片语法，只保留九宫格显示
-                const contentWithoutImages = item.content.replace(/!\[.*?\]\(.*?\)/g, '');
-                const renderedContent = marked.parse(contentWithoutImages);
-
-                return {
-                    id: item.id,
-                    title: item.title || '',
-                    content: item.content,
-                    renderedContent,
-                    images,
-                    tags: Array.isArray(item.tags) ? item.tags : [],
-                    date: item.date,
-                    updatedAt: item.updatedAt,
-                    user: {
-                        username: DEFAULT_USER.username,
-                        nickname: DEFAULT_USER.nickname,
-                        avatarUrl: DEFAULT_USER.avatarUrl,
-                    },
-                };
-            });
+        if (data && data.ChannelMessageData) {
+            const formattedEssays = data.ChannelMessageData.map((item: any) => ({
+                id: item.id,
+                content: formatContent(item),
+                views: item.views || '0',
+                date: formatTime(item.time),
+                tags: Array.isArray(item.tags) ? item.tags : [],
+                user: {
+                    username: DEFAULT_USER.username,
+                    nickname: DEFAULT_USER.nickname,
+                    avatarUrl: DEFAULT_USER.avatarUrl,
+                },
+            }));
 
             essaysState.value.essays = formattedEssays;
             essaysState.value.lastFetchTime = Date.now();
@@ -212,44 +193,19 @@ async function fetchEssays() {
     }
 }
 
-// 加载外部脚本
-function loadExternalScripts() {
-    if (import.meta.client) {
-        const loadScript = (src: string) => {
-            return new Promise((resolve, reject) => {
-                if (document.querySelector(`script[src="${src}"]`)) {
-                    return resolve(null);
-                }
-
-                const script = document.createElement('script');
-                script.src = src;
-                script.async = true;
-                script.onload = resolve;
-                script.onerror = reject;
-                document.head.appendChild(script);
-            });
-        };
-
-        loadScript('https://jsd.myxz.top/npm/aplayer/dist/APlayer.min.js')
-            .catch(err => console.error('APlayer脚本加载失败:', err));
-        loadScript('https://jsd.myxz.top/npm/meting@2/dist/Meting.min.js')
-            .catch(err => console.error('Meting脚本加载失败:', err));
-    }
-}
-
 // 初始化
 onMounted(() => {
     // 检测是否为移动设备
     isMobile.value = window.innerWidth < 768;
-    
+
     // 获取数据
     fetchEssays();
-    
+
     // 添加事件监听器
     if (import.meta.client) {
         window.addEventListener("resize", handleResize);
         window.addEventListener("scroll", handleScroll);
-        
+
         if (!isMobile.value && siteConfig.theme.scrollNavigation) {
             window.addEventListener("wheel", handleWheel, { passive: false });
         }
@@ -261,11 +217,11 @@ onUnmounted(() => {
     if (import.meta.client) {
         window.removeEventListener("scroll", handleScroll);
         window.removeEventListener("resize", handleResize);
-        
+
         if (!isMobile.value && siteConfig.theme.scrollNavigation) {
             window.removeEventListener("wheel", handleWheel);
         }
-        
+
         // 关闭fancybox
         Fancybox.close();
     }
@@ -273,13 +229,13 @@ onUnmounted(() => {
 
 // 获取随笔摘要内容（用于引用）
 function getEssaySummary(item: any): string {
-    // 从原始 content 获取纯文本
-    const textContent = item.content
-        .replace(/!\[.*?\]\(.*?\)/g, '[图片]') // 移除图片链接
-        .replace(/```[\s\S]*?```/g, '[代码]') // 移除代码块
-        .replace(/`[^`]+`/g, '') // 移除行内代码
-        .replace(/\[.*?\]\(.*?\)/g, '$1') // 提取链接文本
-        .replace(/[#*`_~\[\]()]/g, '') // 移除 markdown 标记
+    // 移除HTML标签，获取纯文本
+    const textContent = item.content.text
+        .replace(/<[^>]*>/g, '')
+        .replace(/&nbsp;/g, ' ')
+        .replace(/&lt;/g, '<')
+        .replace(/&gt;/g, '>')
+        .replace(/&amp;/g, '&')
         .trim();
     
     // 如果内容过长，截取前100个字符
@@ -313,8 +269,11 @@ const handleCommentClick = (index: number, content: string) => {
 // 打开图片灯箱
 const openImageViewer = (images: string[], index: number) => {
     if (import.meta.client) {
-        const items = images.map(src => ({ src, type: 'image' }));
-        
+        const items = images.map(src => ({ 
+            src, 
+            type: 'image' as const 
+        }));
+
         Fancybox.show(items, {
             startIndex: index,
             Thumbs: {
@@ -346,16 +305,13 @@ const openImageViewer = (images: string[], index: number) => {
                 </p>
 
                 <!-- 加载状态 -->
-                <div v-if="combinedLoading" class="flex justify-center items-center py-16">
+                <div v-if="loading" class="flex justify-center items-center py-16">
                     <div class="steam-loading-container">
                         <div class="steam-loading-header">
                             加载数据中...
                         </div>
                         <div class="steam-progress-bar">
-                            <div
-                                class="steam-progress"
-                                :style="{ width: `${Math.min((userState.loading ? 0.5 : 0) + (essaysState.loading ? 0.5 : 0), 1) * 100}%` }"
-                            />
+                            <div class="steam-progress" style="width: 100%" />
                         </div>
                         <p class="steam-loading-subtext">
                             正在获取随笔数据...
@@ -364,64 +320,19 @@ const openImageViewer = (images: string[], index: number) => {
                 </div>
 
                 <!-- 加载错误 -->
-                <div v-else-if="combinedError" class="text-center py-16">
+                <div v-else-if="error" class="text-center py-16">
                     <i class="fas fa-exclamation-triangle text-4xl text-red-500 mb-4"></i>
                     <p class="text-red-500 text-lg mb-4">随笔加载失败</p>
                     <p class="text-muted">请刷新页面重试</p>
                 </div>
 
-                <!-- 动态列表 -->
+                <!-- 用户资料和统计区域 -->
                 <div v-else class="essay-content">
-                    <!-- 用户资料区域 -->
-                    <div class="profile">
-                        <div class="header">
-                            <img
-                                class="avatar"
-                                :src="user?.avatarUrl || 'https://imgbed.mcyzsx.top/file/avatar/1765626136745_zsxcoder.jpg'"
-                                :alt="user?.nickname || '用户头像'"
-                            >
-                            <div class="info">
-                                <div class="row">
-                                    <h2 class="username">
-                                        {{ user?.nickname || user?.username || '用户' }}
-                                        <i class="fas fa-check-circle verified"></i>
-                                    </h2>
-                                </div>
-                                <div v-if="user" class="row">
-                                    <span class="bio">{{ user?.slogan || '这个人很懒，什么都没留下' }}</span>
-                                </div>
-                                <span v-if="essays.length > 0" class="bio">
-                                    更新时间：{{ dayjs(essays[0].date).locale('zh-cn').fromNow().replaceAll(/\s+/g, '') }}
-                                </span>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- 统计卡片区域 -->
-                    <div class="overview">
-                        <div class="stat-card">
-                            <i class="fas fa-edit stat-icon text-primary"></i>
-                            <div class="stat-info">
-                                <div class="stat-label">总发布</div>
-                                <div class="stat-value">{{ essays.length }}</div>
-                            </div>
-                        </div>
-                        <div class="stat-card">
-                            <i class="fas fa-tags stat-icon text-primary"></i>
-                            <div class="stat-info">
-                                <div class="stat-label">总标签</div>
-                                <div v-if="essays.length > 0" class="stat-value">
-                                    {{ essays[0].tags.length }}
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
                     <!-- 动态列表 -->
                     <div class="essays-list">
                         <div
                             v-for="(item, index) in essays"
-                            :key="item.id || index"
+                            :key="item.id"
                             class="essay-item"
                             :style="{ '--delay': `${index * 0.1}s` }"
                         >
@@ -429,32 +340,31 @@ const openImageViewer = (images: string[], index: number) => {
                             <div class="essay-meta">
                                 <img
                                     class="avatar"
-                                    :src="item.user?.avatarUrl || user?.avatarUrl"
+                                    :src="item.user?.avatarUrl || user.avatarUrl"
                                     :alt="item.user?.nickname"
                                 >
                                 <div class="info">
                                     <div class="essay-nick">
-                                        {{ item.user?.nickname || user?.nickname }}
+                                        {{ item.user?.nickname || user.nickname }}
                                         <i class="fas fa-check-circle verified"></i>
                                     </div>
                                     <div class="essay-date">
                                         {{ dayjs(item.date).locale('zh-cn').fromNow().replaceAll(/\s+/g, '') }}
+                                        <span v-if="item.views" class="essay-views">
+                                            <i class="fas fa-eye"></i> {{ item.views }}
+                                        </span>
                                     </div>
                                 </div>
                             </div>
 
                             <!-- 动态内容 -->
                             <div class="essay-content-item">
-                                <!-- Markdown渲染内容 -->
-                                <div 
-                                    class="markdown-content" 
-                                    v-html="item.renderedContent"
-                                />
+                                <div class="essay_content_text" v-html="item.content.text" />
 
-                                <!-- 图片展示 - 九宫格 -->
-                                <div v-if="item.images.length" class="zone_imgbox">
-                                    <div
-                                        v-for="(img, imgIndex) in item.images"
+                                <!-- 图片展示 -->
+                                <div v-if="item.content.images.length" class="zone_imgbox">
+                                    <figure
+                                        v-for="(img, imgIndex) in item.content.images"
                                         :key="imgIndex"
                                         class="img-item"
                                     >
@@ -463,22 +373,22 @@ const openImageViewer = (images: string[], index: number) => {
                                             class="essay-img"
                                             loading="lazy"
                                             :fetchpriority="imgIndex === 0 ? 'high' : 'low'"
-                                            @click="openImageViewer(item.images, imgIndex)"
+                                            @click="openImageViewer(item.content.images, imgIndex)"
                                         >
-                                    </div>
+                                    </figure>
                                 </div>
                             </div>
 
                             <!-- 底部区域 -->
                             <div class="essay-bottom">
                                 <div class="essay-tags">
-                                    <span class="tag">
+                                    <span v-if="item.tags.length > 0" class="tag">
                                         🏷️{{ Array.isArray(item.tags) ? item.tags.join(', ') : item.tags }}
                                     </span>
                                 </div>
-                                
+
                                 <!-- 评论按钮 -->
-                                <button 
+                                <button
                                     class="comment-button"
                                     @click="handleCommentClick(index, getEssaySummary(item))"
                                 >
@@ -516,7 +426,7 @@ const openImageViewer = (images: string[], index: number) => {
                         <GiscusComments
   essay-id="essays-page-comments"
   :essay-content="referencedEssay?.content || ''"
-  :theme="isDark ? 'transparent_dark' : 'light'"
+  theme="light"
   :default-show="true"
 />
                     </div>
@@ -590,100 +500,6 @@ const openImageViewer = (images: string[], index: number) => {
     width: 100%;
     color: #333;
     gap: 16px;
-}
-
-/* 用户资料区域 */
-.profile {
-    background: #f9fafb;
-    border-radius: 8px;
-    padding: 1rem;
-    box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.05);
-    margin-bottom: 1rem;
-    display: flex;
-    gap: 0.5rem;
-    transition: border-color 0.3s;
-}
-
-.header {
-    align-items: flex-start;
-    display: flex;
-    gap: 1em;
-}
-
-.avatar {
-    flex-shrink: 0;
-    height: 100px;
-    object-fit: cover;
-    width: 100px;
-    border: 2px solid #8b5a8c;
-    border-radius: 50%;
-}
-
-.info {
-    min-width: 0px;
-    flex: 1 1 0%;
-}
-
-.row {
-    align-items: center;
-    display: flex;
-    flex-wrap: wrap;
-    margin-bottom: 0.5em;
-    gap: 0.75em;
-}
-
-.username {
-    color: #333;
-    font-size: 1.25em;
-    font-weight: 600;
-    word-break: break-word;
-    margin: 0px;
-}
-
-.verified {
-    color: #8b5a8c;
-    font-size: 16px;
-    margin-left: 4px;
-}
-
-.bio {
-    color: #666;
-    font-size: 0.9rem;
-}
-
-/* 统计卡片区域 */
-.overview {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-    gap: 1rem;
-    margin-bottom: 1rem;
-}
-
-.stat-card {
-    background: #f9fafb;
-    border-radius: 8px;
-    padding: 1rem;
-    box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.05);
-    display: flex;
-    gap: 0.5rem;
-    transition: border-color 0.3s;
-    align-items: center;
-}
-
-.stat-icon {
-    font-size: 1.8rem;
-    color: #8b5a8c;
-}
-
-.stat-info .stat-label {
-    font-size: 0.9rem;
-    color: #666;
-}
-
-.stat-info .stat-value {
-    font-size: 1.4rem;
-    font-weight: bold;
-    color: #333;
 }
 
 .steam-loading-header {
@@ -764,10 +580,31 @@ const openImageViewer = (images: string[], index: number) => {
     font-weight: 500;
 }
 
+.verified {
+    color: #8b5a8c;
+    font-size: 14px;
+    margin-left: 2px;
+}
+
 .essay-date {
     font-size: 0.8rem;
     color: #999;
     font-family: monospace;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.essay-views {
+    font-size: 0.75rem;
+    color: #8b5a8c;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.essay-views i {
+    font-size: 0.7rem;
 }
 
 /* 动态内容 */
@@ -779,29 +616,7 @@ const openImageViewer = (images: string[], index: number) => {
     color: #555;
 }
 
-/* Markdown 内容样式 */
-.markdown-content {
-    font-size: 0.95rem;
-    word-wrap: break-word;
-}
-
-.markdown-content :deep(h1),
-.markdown-content :deep(h2),
-.markdown-content :deep(h3),
-.markdown-content :deep(h4),
-.markdown-content :deep(h5),
-.markdown-content :deep(h6) {
-    margin-top: 1em;
-    margin-bottom: 0.5em;
-    font-weight: 600;
-    color: #333;
-}
-
-.markdown-content :deep(p) {
-    margin-bottom: 0.5em;
-}
-
-.markdown-content :deep(a) {
+:deep(.essay_content_link) {
     margin: 0 -0.1em;
     padding: 0 0.1em;
     background: linear-gradient(rgba(139, 90, 140, 0.1), rgba(139, 90, 140, 0.1)) no-repeat center bottom / 100% 0.1em;
@@ -810,70 +625,23 @@ const openImageViewer = (images: string[], index: number) => {
     transition: all 0.2s;
 }
 
-.markdown-content :deep(a:hover) {
+:deep(.essay_content_link:hover) {
     border-radius: 0.3em;
     background-size: 100% 100%;
 }
 
-.markdown-content :deep(code) {
-    background-color: #f3f4f6;
-    border-radius: 3px;
-    padding: 0.2em 0.4em;
-    font-size: 0.9em;
-    font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
-}
-
-.markdown-content :deep(pre) {
-    background-color: #1e1e1e;
-    border-radius: 8px;
-    padding: 1em;
-    overflow-x: auto;
-    margin: 0.5em 0;
-}
-
-.markdown-content :deep(pre code) {
-    background-color: transparent;
-    padding: 0;
-    color: #d4d4d4;
-}
-
-.markdown-content :deep(blockquote) {
-    border-left: 4px solid #8b5a8c;
-    padding-left: 1em;
-    margin: 0.5em 0;
-    color: #666;
-    font-style: italic;
-}
-
-.markdown-content :deep(ul),
-.markdown-content :deep(ol) {
-    padding-left: 1.5em;
-    margin: 0.5em 0;
-}
-
-.markdown-content :deep(li) {
-    margin: 0.25em 0;
-}
-
-.markdown-content :deep(img) {
-    max-width: 100%;
-    height: auto;
-    border-radius: 4px;
-}
-
-/* 九宫格图片展示 - 尺寸减少1/3 */
+/* 图片展示 */
 .zone_imgbox {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
-    gap: 6px;
+    gap: 8px;
 }
 
 .img-item {
     position: relative;
-    padding-bottom: 66.67%; /* 减少尺寸1/3: 100% * 2/3 = 66.67% */
+    padding-bottom: 100%;
     border-radius: 8px;
     overflow: hidden;
-    cursor: pointer;
 }
 
 .essay-img {
@@ -882,6 +650,7 @@ const openImageViewer = (images: string[], index: number) => {
     width: 100%;
     height: 100%;
     object-fit: cover;
+    cursor: pointer;
     transition: transform 0.3s;
 }
 
@@ -1025,8 +794,7 @@ const openImageViewer = (images: string[], index: number) => {
     font-size: 0.7rem;
 }
 
-.tag,
-.location {
+.tag {
     background-color: #f3f4f6;
     border-radius: 4px;
     cursor: pointer;
@@ -1035,17 +803,8 @@ const openImageViewer = (images: string[], index: number) => {
     transition: all 0.2s;
 }
 
-.tag:hover,
-.location:hover {
+.tag:hover {
     opacity: 0.8;
-}
-
-.location {
-    color: #8b5a8c;
-}
-
-.location-icon {
-    margin-right: 2px;
 }
 
 /* 底部提示 */
@@ -1060,10 +819,6 @@ const openImageViewer = (images: string[], index: number) => {
 @media (max-width: 768px) {
     .component-card {
         padding: 1.5rem;
-    }
-
-    .overview {
-        grid-template-columns: repeat(2, 1fr);
     }
 
     .zone_imgbox {
@@ -1092,46 +847,6 @@ const openImageViewer = (images: string[], index: number) => {
     color: #9ca3af;
 }
 
-/* 用户资料区域深色模式 */
-.dark .profile {
-    background: rgba(31, 41, 55, 0.8);
-    border-color: rgba(75, 85, 99, 0.3);
-}
-
-.dark .avatar {
-    border-color: #a974a9;
-}
-
-.dark .username {
-    color: #f3f4f6;
-}
-
-.dark .verified {
-    color: #a974a9;
-}
-
-.dark .bio {
-    color: #d1d5db;
-}
-
-/* 统计卡片深色模式 */
-.dark .stat-card {
-    background: rgba(31, 41, 55, 0.8);
-    border-color: rgba(75, 85, 99, 0.3);
-}
-
-.dark .stat-icon {
-    color: #a974a9;
-}
-
-.dark .stat-info .stat-label {
-    color: #9ca3af;
-}
-
-.dark .stat-info .stat-value {
-    color: #f3f4f6;
-}
-
 /* 动态项深色模式 */
 .dark .essay-item {
     background: rgba(31, 41, 55, 0.8);
@@ -1158,52 +873,28 @@ const openImageViewer = (images: string[], index: number) => {
     color: #e5e7eb;
 }
 
-/* Markdown 深色模式 */
-.dark .markdown-content :deep(h1),
-.dark .markdown-content :deep(h2),
-.dark .markdown-content :deep(h3),
-.dark .markdown-content :deep(h4),
-.dark .markdown-content :deep(h5),
-.dark .markdown-content :deep(h6) {
-    color: #f3f4f6;
-}
-
-.dark .markdown-content :deep(code) {
-    background-color: #374151;
-    color: #e5e7eb;
-}
-
-.dark .markdown-content :deep(blockquote) {
-    border-left-color: #a974a9;
-    color: #d1d5db;
-}
-
-.dark .markdown-content :deep(a) {
-    background: linear-gradient(rgba(169, 116, 169, 0.2), rgba(169, 116, 169, 0.2)) no-repeat center bottom / 100% 0.1em;
-    color: #a974a9;
-}
-
-.dark .markdown-content :deep(a:hover) {
-    border-radius: 0.3em;
-    background-size: 100% 100%;
-}
-
 /* 底部区域深色模式 */
 .dark .essay-bottom {
     color: #9ca3af;
 }
 
-.dark .tag,
-.dark .location {
+.dark .tag {
     background-color: rgba(139, 90, 140, 0.2);
-}
-
-.dark .location {
-    color: #a974a9;
 }
 
 /* 底部提示深色模式 */
 .dark .essays-footer {
     color: #9ca3af;
+}
+
+/* 动态内容链接深色模式 */
+.dark :deep(.essay_content_link) {
+    background: linear-gradient(rgba(169, 116, 169, 0.2), rgba(169, 116, 169, 0.2)) no-repeat center bottom / 100% 0.1em;
+    color: #a974a9;
+}
+
+.dark :deep(.essay_content_link:hover) {
+    border-radius: 0.3em;
+    background-size: 100% 100%;
 }
 </style>

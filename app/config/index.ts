@@ -192,7 +192,7 @@ export const siteConfig = {
                 { name: "友链朋友圈", href: "/fcircle", key: "fcircle" },
             ]
         },
-        { name: "随笔", href: "/moments", key: "essays" },
+        { name: "随笔", href: "/tgtalk", key: "essays" },
         { name: "赞助支持", href: "/sponsor", key: "sponsor" },
         { 
             name: "项目", 

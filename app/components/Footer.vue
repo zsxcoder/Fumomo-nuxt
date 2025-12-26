@@ -12,7 +12,7 @@ const quickLinks = [
     { name: '朋友们', href: '/friends' },
     { name: '朋友圈', href: '/fcircle' },
     { name: '留言板', href: '/guestbook' },
-    { name: '随笔', href: '/moments' },
+    { name: '随笔', href: '/tgtalk' },
   
 ]
 
